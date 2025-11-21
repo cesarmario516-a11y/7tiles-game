@@ -1,0 +1,2681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tile Home Clone - Fases</title>
+    
+    <!-- Google AdSense/AdMob SDK - Substituir com seu próprio ID -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
+     
+    <!-- Fonte estilo cartoon -->
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Fredoka+One&display=swap" rel="stylesheet">
+     
+    <style>
+        /* --- ESTILO GERAL --- */
+        body {
+            margin: 0;
+            background: linear-gradient(to bottom, #20bf55, #01baef); /* Gradiente Verde/Azul vibrante */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .game-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            flex: 1;
+            padding: 0 20px;
+        }
+
+        /* --- HUD SUPERIOR --- */
+        .header {
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .level-badge {
+            background: rgba(0,0,0,0.3);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .coins-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+
+        .coins {
+            background: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .add-coins-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border: 3px solid white;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+        }
+
+        .add-coins-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .add-coins-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* --- TABULEIRO (Área do Jogo) --- */
+        #game-container {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        #game-board {
+            position: relative;
+            width: 380px;
+            height: 420px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* border: 1px dashed rgba(255,255,255,0.3); Debug area */
+        }
+
+        /* --- PEÇAS (TILES) --- */
+        .tile {
+            width: 60px;
+            height: 66px;
+            background-color: #fdfdfd;
+            border-radius: 10px;
+            /* Sombra complexa para dar efeito 3D estilo Mahjong */
+            box-shadow: 
+                inset 0 -4px 0 #dcdcdc, 
+                0 4px 0 #bbb, 
+                0 6px 6px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px; /* Emoji maior */
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.1s ease-out;
+            z-index: 1;
+            border: 1px solid #eee;
+        }
+
+        .tile.blocked {
+            cursor: not-allowed;
+        }
+
+        /* Efeito ao clicar */
+        .tile:active {
+            transform: translateY(4px);
+            box-shadow: inset 0 -2px 0 #ccc, 0 0 0 #bbb;
+        }
+
+        /* --- BANDEJA (TRAY) --- */
+        .tray-container {
+            background: #fbe4c2; /* Madeira clara */
+            width: auto; /* Ajusta ao conteúdo */
+            height: 90px;
+            border-radius: 15px;
+            border-bottom: 6px solid #8d6e63;
+            border-left: 2px solid #8d6e63;
+            border-right: 2px solid #8d6e63;
+            margin: 20px auto 25px auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            padding: 0 15px 10px 15px; /* Padding lateral menor */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .tray-slots {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .slot {
+            width: 50px;
+            height: 56px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 8px;
+            border: 1px dashed rgba(141, 110, 99, 0.4);
+        }
+
+        /* --- SKILLS --- */
+        .skills-bar {
+            display: flex;
+            gap: 30px;
+            margin: 0 auto 25px auto;
+            justify-content: center;
+            max-width: 500px;
+        }
+
+        .skill-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #ccc, 0 5px 10px rgba(0,0,0,0.1);
+            position: relative;
+            transition: transform 0.1s;
+        }
+        
+        .skill-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #ccc;
+        }
+
+        .lock-icon {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            padding: 4px;
+            font-size: 12px;
+            width: 15px;
+            height: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .skill-counter {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #2ecc71;
+            color: white;
+            border-radius: 50%;
+            padding: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            min-width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* --- POPUPS --- */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 300px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            0% { transform: translateY(-100px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideUp {
+            0% { transform: translateY(100px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(600px) rotate(720deg); opacity: 0; }
+        }
+
+        /* Victory Screen */
+        .victory-screen {
+            position: relative;
+            padding: 20px;
+        }
+
+        .victory-banner {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            animation: slideDown 0.5s ease;
+        }
+
+        .victory-title {
+            color: white;
+            font-size: 1.2rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .victory-level {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0 0 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+        }
+
+        .coin-reward {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: bounceIn 0.6s ease 0.3s backwards;
+        }
+
+        .coin-icon {
+            font-size: 5rem;
+        }
+
+        .coin-amount {
+            font-size: 2rem;
+            color: #f39c12;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .next-level-box {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 20px rgba(46,204,113,0.5);
+            animation: slideUp 0.5s ease 0.6s backwards, pulse 0.8s ease 1.2s infinite;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .next-level-box:hover {
+            transform: scale(1.05);
+        }
+        
+        .next-level-box:active {
+            transform: scale(0.95);
+        }
+
+        .next-level-text {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            animation: confetti 3s linear infinite;
+        }
+
+        h1 { color: #333; margin: 0 0 10px 0; }
+        p { color: #666; font-size: 1.1rem; }
+
+        /* --- HOME SCREEN --- */
+        #home-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, #20bf55, #01baef);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            overflow: hidden;
+        }
+
+
+
+        .home-logo {
+            background: linear-gradient(180deg, #00D4FF 0%, #00B8E6 100%);
+            padding: 35px 50px;
+            border-radius: 25px;
+            margin-bottom: 100px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            border: none;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .home-title {
+            font-family: 'Fredoka One', 'Lilita One', cursive;
+            font-size: 5rem;
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            line-height: 1;
+        }
+
+        .home-title-number {
+            font-family: 'Fredoka One', cursive;
+            font-size: 9rem;
+            color: white;
+            text-shadow: 
+                0 0 20px rgba(255,255,255,0.8),
+                4px 4px 0 rgba(0,0,0,0.2);
+            font-weight: 900;
+            line-height: 0.8;
+        }
+
+        .home-title-tiles {
+            font-family: 'Fredoka One', cursive;
+            font-size: 5rem;
+            color: #ffa500;
+            text-shadow: 
+                3px 3px 0 #ff8c00,
+                -2px -2px 0 #ffb84d,
+                5px 5px 10px rgba(0,0,0,0.3);
+            font-weight: 900;
+            letter-spacing: 5px;
+        }
+
+        .home-subtitle {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            color: white;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            margin: 15px 0 0 0;
+            font-weight: 900;
+            letter-spacing: 2px;
+            opacity: 0.9;
+        }
+
+        .home-button {
+            background: linear-gradient(to bottom, #ffa500, #ff8c00);
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 20px 80px;
+            border: 5px solid white;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3), inset 0 -5px 0 rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .home-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4), inset 0 -5px 0 rgba(0,0,0,0.2);
+        }
+
+        .home-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
+        }
+
+        .current-level-display {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Botões de Navegação */
+        .nav-buttons {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 15;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+            z-index: 20;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Config Modal */
+        .config-modal {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            padding: 0;
+            border-radius: 30px;
+            width: 85%;
+            max-width: 350px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        .config-header {
+            background: linear-gradient(135deg, #5dade2, #3498db);
+            padding: 25px;
+            position: relative;
+        }
+
+        .config-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .config-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .config-close:hover {
+            background: rgba(0,0,0,0.4);
+        }
+
+        .config-content {
+            background: white;
+            padding: 25px;
+        }
+
+        .config-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .config-option:last-of-type {
+            border-bottom: none;
+        }
+
+        .config-label {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .config-icon {
+            font-size: 2rem;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 70px;
+            height: 35px;
+            background: #27ae60;
+            border-radius: 35px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: 3px solid #ecf0f1;
+        }
+
+        .toggle-switch.off {
+            background: #bdc3c7;
+        }
+
+        .toggle-knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 27px;
+            height: 27px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .toggle-switch:not(.off) .toggle-knob {
+            transform: translateX(35px);
+        }
+
+        .toggle-check {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .config-extras {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .config-extra-btn {
+            font-size: 2.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .config-extra-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .config-footer {
+            text-align: center;
+            padding: 15px;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+
+        /* Shop Modal */
+        .shop-modal {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            padding: 0;
+            border-radius: 30px;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            overflow: hidden;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .shop-header {
+            background: linear-gradient(135deg, #a569bd, #9b59b6);
+            padding: 25px;
+            position: relative;
+        }
+
+        .shop-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .shop-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .shop-close:hover {
+            background: rgba(0,0,0,0.4);
+        }
+
+        .shop-content {
+            background: white;
+            padding: 25px 15px;
+        }
+
+        .shop-section {
+            margin-bottom: 25px;
+        }
+
+        .shop-section-title {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 0 0 15px 0;
+            padding-left: 10px;
+            border-left: 4px solid #9b59b6;
+        }
+
+        .shop-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .shop-item {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .shop-item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .shop-item-icon {
+            font-size: 3rem;
+        }
+
+        .shop-item-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shop-item-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .shop-item-desc {
+            font-size: 0.9rem;
+            color: #333;
+            margin: 3px 0 0 0;
+        }
+
+        .shop-item-price {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .shop-price-btn {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+
+        .shop-price-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .shop-price-btn:active {
+            transform: scale(0.95);
+        }
+
+        .shop-price-btn.ad-option {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .coin-package {
+            background: linear-gradient(135deg, #ffd93d, #ffa500);
+            border: 3px solid #f39c12;
+        }
+
+        .coin-package .shop-item-name {
+            color: white;
+        }
+
+        .coin-package .shop-price-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        /* Language Modal */
+        .language-modal {
+            background: white;
+            border-radius: 30px;
+            width: 85%;
+            max-width: 400px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+
+        .language-header {
+            background: linear-gradient(135deg, #5dade2, #3498db);
+            padding: 20px;
+            position: relative;
+            border-radius: 30px 30px 0 0;
+        }
+
+        .language-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .language-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(231,76,60,1);
+            border: 3px solid white;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            transition: transform 0.1s;
+        }
+
+        .language-close:hover {
+            transform: scale(1.1);
+        }
+
+        .language-close:active {
+            transform: scale(0.95);
+        }
+
+        .language-content {
+            padding: 30px 20px;
+        }
+
+        .language-option {
+            background: #f8f9fa;
+            padding: 18px 25px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #5a6c7d;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .language-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .language-option.selected {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            color: #2d3436;
+            box-shadow: 0 4px 15px rgba(253,203,110,0.4);
+        }
+
+        .language-checkmark {
+            font-size: 2rem;
+            color: #27ae60;
+            display: none;
+        }
+
+        .language-option.selected .language-checkmark {
+            display: block;
+        }
+
+        .language-confirm {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(39,174,96,0.3);
+            transition: transform 0.1s;
+        }
+
+        .language-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(39,174,96,0.4);
+        }
+
+        .language-confirm:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #1e8449;
+            width: 100%;
+        }
+        
+        .btn-primary:active { transform: translateY(4px); box-shadow: none; }
+
+        .btn-danger {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #962d22;
+            width: 100%;
+        }
+        .btn-danger:active { transform: translateY(4px); box-shadow: none; }
+
+        /* --- CONTADOR CIRCULAR --- */
+        .countdown-circle {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .countdown-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .countdown-ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 8px solid #e0e0e0;
+            border-top: 8px solid #00bfff;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-continue {
+            margin-top: 20px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: linear-gradient(to bottom, #00d084, #00a368);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #007d4d;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-continue:active { transform: translateY(4px); box-shadow: none; }
+
+        /* --- BANNER AD CONTAINER --- */
+        .banner-ad-container {
+            width: 100%;
+            max-width: 320px;
+            height: 50px;
+            margin: 10px auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- HOME SCREEN -->
+    <div id="home-screen">
+        <!-- Moedas no topo da Home -->
+        <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="coins">⭐ <span id="home-coin-display">300</span></div>
+                <button class="add-coins-btn" onclick="openShop()">+</button>
+            </div>
+        </div>
+        
+        <div class="home-logo" id="home-logo">
+            <p class="home-title">
+                <span class="home-title-number">7</span>
+                <span class="home-title-tiles">TILES</span>
+            </p>
+            <p class="home-subtitle">JOGO DE COMBINAR</p>
+        </div>
+        
+        <p class="current-level-display" id="home-level-display">Nível 1</p>
+        
+        <button class="home-button" onclick="startGame()">Nível 1</button>
+        
+        <button class="nav-btn" onclick="openConfig()" style="position: absolute; top: 20px; right: 20px; z-index: 10;">
+            ⚙️
+        </button>
+    </div>
+
+    <!-- NAVIGATION BUTTONS (Game Screen) -->
+    <div class="nav-buttons" style="display: none;" id="nav-buttons">
+        <button class="nav-btn" onclick="goHome()">↩️</button>
+        <button class="nav-btn" onclick="openConfig()">⚙️</button>
+    </div>
+
+    <div class="header">
+        <div class="level-badge" id="level-display">Nível 1</div>
+        <div class="coins-container">
+            <div class="coins">⭐ <span id="coin-display">300</span></div>
+            <button class="add-coins-btn" onclick="openShop()">+</button>
+        </div>
+    </div>
+
+    <!-- BANDEJA NO TOPO -->
+    <div class="tray-container">
+        <div class="tray-slots" id="tray-display">
+            <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+            <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+            <div class="slot"></div>
+        </div>
+    </div>
+
+    <!-- TABULEIRO NO CENTRO -->
+    <div id="game-container">
+        <div id="game-board">
+            <!-- Tiles via JS -->
+        </div>
+    </div>
+
+    <!-- SKILLS NA PARTE INFERIOR -->
+    <div class="skills-bar">
+        <button class="skill-btn" id="undo-btn" onclick="useSkill('undo')">
+            ↩️
+            <div class="lock-icon" id="undo-lock">🔒</div>
+            <div class="skill-counter" id="undo-counter" style="display:none;">0</div>
+        </button>
+        <button class="skill-btn" id="shuffle-btn" onclick="useSkill('shuffle')">
+            🔀
+            <div class="lock-icon" id="shuffle-lock">🔒</div>
+            <div class="skill-counter" id="shuffle-counter" style="display:none;">0</div>
+        </button>
+        <button class="skill-btn" id="hint-btn" onclick="useSkill('hint')">
+            💡
+            <div class="lock-icon" id="hint-lock">🔒</div>
+            <div class="skill-counter" id="hint-counter" style="display:none;">0</div>
+        </button>
+    </div>
+
+    <!-- BANNER AD (Bottom of Screen) -->
+    <div class="banner-ad-container">
+        <!-- Google AdSense Banner - Substituir com seu código -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:320px;height:50px"
+             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX"></ins>
+    </div>
+
+    <!-- OVERLAY (Modals) -->
+    <div id="overlay">
+        <div class="modal-box" id="modal-content">
+            <!-- Conteúdo dinâmico -->
+        </div>
+    </div>
+
+    <!-- CONFIG MODAL -->
+    <div id="config-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 250; backdrop-filter: blur(5px);">
+        <div class="config-modal">
+            <div class="config-header">
+                <h2 class="config-title">Configuração</h2>
+                <button class="config-close" onclick="closeConfig()">✖</button>
+            </div>
+            <div class="config-content">
+                <div class="config-option">
+                    <div class="config-label">
+                        <span class="config-icon">🎵</span>
+                        <span>Música</span>
+                    </div>
+                    <div class="toggle-switch" id="music-toggle" onclick="toggleMusic()">
+                        <div class="toggle-knob"></div>
+                        <span class="toggle-check">✓</span>
+                    </div>
+                </div>
+                
+                <div class="config-option">
+                    <div class="config-label">
+                        <span class="config-icon">🔊</span>
+                        <span>Som</span>
+                    </div>
+                    <div class="toggle-switch" id="sound-toggle" onclick="toggleSound()">
+                        <div class="toggle-knob"></div>
+                        <span class="toggle-check">✓</span>
+                    </div>
+                </div>
+                
+                <div class="config-option">
+                    <div class="config-label">
+                        <span class="config-icon">🔔</span>
+                        <span>Notificação</span>
+                    </div>
+                    <div class="toggle-switch" id="notification-toggle" onclick="toggleNotification()">
+                        <div class="toggle-knob"></div>
+                        <span class="toggle-check">✓</span>
+                    </div>
+                </div>
+                
+                <button onclick="openLanguageModal()" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 15px; border: none; border-radius: 15px; font-size: 1.3rem; font-weight: bold; width: 100%; margin-top: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                    🌐 Idioma / Language
+                </button>
+            </div>
+            <div class="config-footer">
+                Versão: <span id="game-version">1.0.0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LANGUAGE MODAL -->
+    <div id="language-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 300; backdrop-filter: blur(5px);">
+        <div class="language-modal">
+            <div class="language-header">
+                <h2 class="language-title">Língua</h2>
+                <button class="language-close" onclick="closeLanguageModal()">✖</button>
+            </div>
+            <div class="language-content">
+                <div class="language-option" id="lang-option-pt" onclick="selectLanguage('pt')">
+                    <span>Português</span>
+                    <span class="language-checkmark">✔</span>
+                </div>
+                <div class="language-option" id="lang-option-en" onclick="selectLanguage('en')">
+                    <span>English</span>
+                    <span class="language-checkmark">✔</span>
+                </div>
+                <div class="language-option" id="lang-option-es" onclick="selectLanguage('es')">
+                    <span>Español</span>
+                    <span class="language-checkmark">✔</span>
+                </div>
+                <button class="language-confirm" onclick="confirmLanguage()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHOP MODAL -->
+    <div id="shop-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 250; backdrop-filter: blur(5px);">
+        <div class="shop-modal">
+            <div class="shop-header">
+                <h2 class="shop-title">🛒 Loja</h2>
+                <button class="shop-close" onclick="closeShop()">✖</button>
+            </div>
+            <div class="shop-content">
+                <!-- Moedas -->
+                <div class="shop-section">
+                    <h3 class="shop-section-title">💰 Moedas</h3>
+                    <div class="shop-items">
+                        <div class="shop-item coin-package">
+                            <div class="shop-item-info">
+                                <div class="shop-item-icon">💰</div>
+                                <div class="shop-item-details">
+                                    <p class="shop-item-name">100 Moedas</p>
+                                    <p class="shop-item-desc">Pacote pequeno</p>
+                                </div>
+                            </div>
+                            <div class="shop-item-price">
+                                <button class="shop-price-btn" onclick="buyCoins(100, 0.99)">R$ 0,99</button>
+                            </div>
+                        </div>
+                        
+                        <div class="shop-item coin-package">
+                            <div class="shop-item-info">
+                                <div class="shop-item-icon">💎</div>
+                                <div class="shop-item-details">
+                                    <p class="shop-item-name">500 Moedas</p>
+                                    <p class="shop-item-desc">Pacote médio</p>
+                                </div>
+                            </div>
+                            <div class="shop-item-price">
+                                <button class="shop-price-btn" onclick="buyCoins(500, 3.99)">R$ 3,99</button>
+                            </div>
+                        </div>
+                        
+                        <div class="shop-item coin-package">
+                            <div class="shop-item-info">
+                                <div class="shop-item-icon">💎</div>
+                                <div class="shop-item-details">
+                                    <p class="shop-item-name">1500 Moedas</p>
+                                    <p class="shop-item-desc">Pacote grande</p>
+                                </div>
+                            </div>
+                            <div class="shop-item-price">
+                                <button class="shop-price-btn" onclick="buyCoins(1500, 9.99)">R$ 9,99</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Habilidades -->
+                <div class="shop-section">
+                    <h3 class="shop-section-title">⚡ Habilidades</h3>
+                    <div class="shop-items">
+                        <div class="shop-item">
+                            <div class="shop-item-info">
+                                <div class="shop-item-icon">↩️</div>
+                                <div class="shop-item-details">
+                                    <p class="shop-item-name">Desfazer (Undo)</p>
+                                    <p class="shop-item-desc">Volta 1 movimento</p>
+                                </div>
+                            </div>
+                            <div class="shop-item-price">
+                                <button class="shop-price-btn" onclick="buySkillWithCoins('undo')">
+                                    ⭐ 50
+                                </button>
+                                <button class="shop-price-btn ad-option" onclick="buySkillWithAd('undo')">
+                                    📺 Assistir
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="shop-item">
+                            <div class="shop-item-info">
+                                <div class="shop-item-icon">🔀</div>
+                                <div class="shop-item-details">
+                                    <p class="shop-item-name">Embaralhar</p>
+                                    <p class="shop-item-desc">Reorganiza as peças</p>
+                                </div>
+                            </div>
+                            <div class="shop-item-price">
+                                <button class="shop-price-btn" onclick="buySkillWithCoins('shuffle')">
+                                    ⭐ 100
+                                </button>
+                                <button class="shop-price-btn ad-option" onclick="buySkillWithAd('shuffle')">
+                                    📺 Assistir
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="shop-item">
+                            <div class="shop-item-info">
+                                <div class="shop-item-icon">💡</div>
+                                <div class="shop-item-details">
+                                    <p class="shop-item-name">Dica (Hint)</p>
+                                    <p class="shop-item-desc">Mostra próxima jogada</p>
+                                </div>
+                            </div>
+                            <div class="shop-item-price">
+                                <button class="shop-price-btn" onclick="buySkillWithCoins('hint')">
+                                    ⭐ 150
+                                </button>
+                                <button class="shop-price-btn ad-option" onclick="buySkillWithAd('hint')">
+                                    📺 Assistir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURAÇÕES ---
+        const TRAY_CAPACITY = 7;
+        // Lista expandida de frutas para níveis mais difíceis
+        const ALL_TILE_TYPES = ['🍎', '🍌', '🍇', '🍉', '🍊', '🍓', '🍍', '🥝', '🍒', '🍑', '🍋', '🍐'];
+        
+        // Versão do jogo (atualizar a cada nova versão)
+        const GAME_VERSION = '1.0.0';
+        
+        let currentLevel = 1;
+        let coins = 300;
+        
+        let tilesOnBoard = [];
+        let tilesInTray = [];
+        let isProcessing = false; // Trava clique durante animações
+        
+        // Sistema de Game Over com propaganda
+        let countdownTimer = null;
+        let countdownSeconds = 5;
+        let gameOverState = null; // Guarda estado antes do game over
+        
+        // Sistema de Skills - Agora com contadores de uso
+        let skillUses = {
+            undo: 0,      // Quantas vezes tem disponível
+            shuffle: 0,   // Quantas vezes tem disponível
+            hint: 0       // Quantas vezes tem disponível
+        };
+        
+        const SKILL_PRICES = {
+            undo: 50,      // Preço em moedas por uso
+            shuffle: 100,  // Preço em moedas por uso
+            hint: 150      // Preço em moedas por uso
+        };
+
+        // Configurações (toggles)
+        let settings = {
+            music: true,
+            sound: true,
+            notification: true
+        };
+
+        // Sistema de Idiomas
+        let currentLanguage = 'pt';
+        
+        const translations = {
+            pt: {
+                level: 'Nível',
+                shop: '🛒 Loja',
+                coins: 'Moedas',
+                skills: 'Habilidades',
+                undo: 'Desfazer (Undo)',
+                undoDesc: 'Volta 1 movimento',
+                shuffle: 'Embaralhar',
+                shuffleDesc: 'Reorganiza as peças',
+                hint: 'Dica (Hint)',
+                hintDesc: 'Mostra próxima jogada',
+                watch: 'Assistir',
+                smallPack: 'Pacote pequeno',
+                mediumPack: 'Pacote médio',
+                largePack: 'Pacote grande',
+                victory: 'VITÓRIA!',
+                levelComplete: 'Nível Completo',
+                reward: 'Recompensa',
+                nextLevel: 'Próximo Nível',
+                gameOver: 'GAME OVER!',
+                tryAgain: 'Tente Novamente',
+                watchAd: 'Ver Anúncio',
+                continueGame: 'Continuar',
+                restart: 'Reiniciar',
+                noMoves: 'SEM JOGADAS!',
+                noMovesDesc: 'Não há movimentos possíveis',
+                config: 'Configuração',
+                music: 'Música',
+                sound: 'Som',
+                notification: 'Notificação',
+                version: 'Versão'
+            },
+            en: {
+                level: 'Level',
+                shop: '🛒 Shop',
+                coins: 'Coins',
+                skills: 'Skills',
+                undo: 'Undo',
+                undoDesc: 'Go back 1 move',
+                shuffle: 'Shuffle',
+                shuffleDesc: 'Reorganize tiles',
+                hint: 'Hint',
+                hintDesc: 'Show next move',
+                watch: 'Watch',
+                smallPack: 'Small pack',
+                mediumPack: 'Medium pack',
+                largePack: 'Large pack',
+                victory: 'VICTORY!',
+                levelComplete: 'Level Complete',
+                reward: 'Reward',
+                nextLevel: 'Next Level',
+                gameOver: 'GAME OVER!',
+                tryAgain: 'Try Again',
+                watchAd: 'Watch Ad',
+                continueGame: 'Continue',
+                restart: 'Restart',
+                noMoves: 'NO MOVES!',
+                noMovesDesc: 'No possible moves',
+                config: 'Settings',
+                music: 'Music',
+                sound: 'Sound',
+                notification: 'Notification',
+                version: 'Version'
+            },
+            es: {
+                level: 'Nivel',
+                shop: '🛒 Tienda',
+                coins: 'Monedas',
+                skills: 'Habilidades',
+                undo: 'Deshacer',
+                undoDesc: 'Retrocede 1 movimiento',
+                shuffle: 'Mezclar',
+                shuffleDesc: 'Reorganiza las piezas',
+                hint: 'Pista',
+                hintDesc: 'Muestra siguiente jugada',
+                watch: 'Ver',
+                smallPack: 'Paquete pequeño',
+                mediumPack: 'Paquete mediano',
+                largePack: 'Paquete grande',
+                victory: '¡VICTORIA!',
+                levelComplete: 'Nivel Completo',
+                reward: 'Recompensa',
+                nextLevel: 'Siguiente Nivel',
+                gameOver: '¡GAME OVER!',
+                tryAgain: 'Intentar de Nuevo',
+                watchAd: 'Ver Anuncio',
+                continueGame: 'Continuar',
+                restart: 'Reiniciar',
+                noMoves: '¡SIN JUGADAS!',
+                noMovesDesc: 'No hay movimientos posibles',
+                config: 'Configuración',
+                music: 'Música',
+                sound: 'Sonido',
+                notification: 'Notificación',
+                version: 'Versión'
+            }
+        };
+        
+        function t(key) {
+            return translations[currentLanguage][key] || key;
+        }
+
+        // --- NAVEGAÇÃO ---
+        function startGame() {
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('nav-buttons').style.display = 'flex';
+            startLevel(currentLevel);
+        }
+
+        function goHome() {
+            // Salva o progresso
+            document.getElementById('home-screen').style.display = 'flex';
+            document.getElementById('nav-buttons').style.display = 'none';
+            document.getElementById('home-level-display').innerText = `${t('level')} ${currentLevel}`;
+            document.querySelector('.home-button').innerText = `${t('level')} ${currentLevel}`;
+            
+            // Limpa o tabuleiro
+            boardEl.innerHTML = '';
+            tilesOnBoard = [];
+            tilesInTray = [];
+            updateTrayUI();
+        }
+
+        function openConfig() {
+            document.getElementById('config-overlay').style.display = 'flex';
+        }
+
+        function closeConfig() {
+            document.getElementById('config-overlay').style.display = 'none';
+        }
+
+        function toggleMusic() {
+            settings.music = !settings.music;
+            const toggle = document.getElementById('music-toggle');
+            if (settings.music) {
+                toggle.classList.remove('off');
+            } else {
+                toggle.classList.add('off');
+            }
+        }
+
+        function toggleSound() {
+            settings.sound = !settings.sound;
+            const toggle = document.getElementById('sound-toggle');
+            if (settings.sound) {
+                toggle.classList.remove('off');
+            } else {
+                toggle.classList.add('off');
+            }
+        }
+
+        function toggleNotification() {
+            settings.notification = !settings.notification;
+            const toggle = document.getElementById('notification-toggle');
+            if (settings.notification) {
+                toggle.classList.remove('off');
+            } else {
+                toggle.classList.add('off');
+            }
+        }
+
+        // --- SISTEMA DE IDIOMAS ---
+        let selectedLanguage = 'pt'; // Temporário para seleção no modal
+        
+        function openLanguageModal() {
+            selectedLanguage = currentLanguage; // Inicia com idioma atual
+            updateLanguageModal();
+            document.getElementById('language-overlay').style.display = 'flex';
+        }
+        
+        function closeLanguageModal() {
+            document.getElementById('language-overlay').style.display = 'none';
+        }
+        
+        function selectLanguage(lang) {
+            selectedLanguage = lang;
+            updateLanguageModal();
+        }
+        
+        function updateLanguageModal() {
+            // Remove seleção de todos
+            document.querySelectorAll('.language-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Adiciona seleção ao escolhido
+            const selected = document.getElementById(`lang-option-${selectedLanguage}`);
+            if (selected) {
+                selected.classList.add('selected');
+            }
+            
+            // Atualiza título do modal
+            const titles = {
+                pt: 'Língua',
+                en: 'Language',
+                es: 'Idioma'
+            };
+            document.querySelector('.language-title').innerText = titles[selectedLanguage];
+            
+            // Atualiza texto do botão confirmar
+            const confirmTexts = {
+                pt: 'Confirmar',
+                en: 'Confirm',
+                es: 'Confirmar'
+            };
+            document.querySelector('.language-confirm').innerText = confirmTexts[selectedLanguage];
+        }
+        
+        function confirmLanguage() {
+            currentLanguage = selectedLanguage;
+            updateLanguage();
+            closeLanguageModal();
+        }
+        
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            updateLanguage();
+        }
+        
+        function updateLanguage() {
+            // Atualiza títulos e labels
+            document.querySelector('.config-title').innerText = t('config');
+            document.querySelector('.shop-title').innerText = t('shop');
+            
+            // Atualiza labels das configurações
+            const configLabels = document.querySelectorAll('.config-label span:not(.config-icon)');
+            configLabels[0].innerText = t('music');
+            configLabels[1].innerText = t('sound');
+            configLabels[2].innerText = t('notification');
+            
+            // Atualiza seções da loja
+            const shopSections = document.querySelectorAll('.shop-section-title');
+            shopSections[0].innerHTML = `💰 ${t('coins')}`;
+            shopSections[1].innerHTML = `⚡ ${t('skills')}`;
+            
+            // Atualiza itens da loja
+            const skillNames = document.querySelectorAll('.shop-item:not(.coin-package) .shop-item-name');
+            const skillDescs = document.querySelectorAll('.shop-item:not(.coin-package) .shop-item-desc');
+            
+            if (skillNames[0]) skillNames[0].innerText = t('undo');
+            if (skillDescs[0]) skillDescs[0].innerText = t('undoDesc');
+            
+            if (skillNames[1]) skillNames[1].innerText = t('shuffle');
+            if (skillDescs[1]) skillDescs[1].innerText = t('shuffleDesc');
+            
+            if (skillNames[2]) skillNames[2].innerText = t('hint');
+            if (skillDescs[2]) skillDescs[2].innerText = t('hintDesc');
+            
+            // Atualiza botões de assistir anúncio
+            const watchBtns = document.querySelectorAll('.shop-price-btn.ad-option');
+            watchBtns.forEach(btn => {
+                btn.innerHTML = `📺 ${t('watch')}`;
+            });
+            
+            // Atualiza pacotes de moedas
+            const coinDescs = document.querySelectorAll('.coin-package .shop-item-desc');
+            if (coinDescs[0]) coinDescs[0].innerText = t('smallPack');
+            if (coinDescs[1]) coinDescs[1].innerText = t('mediumPack');
+            if (coinDescs[2]) coinDescs[2].innerText = t('largePack');
+            
+            // Atualiza badge de nível
+            document.getElementById('level-display').innerText = `${t('level')} ${currentLevel}`;
+            document.getElementById('home-level-display').innerText = `${t('level')} ${currentLevel}`;
+            document.querySelector('.home-button').innerText = `${t('level')} ${currentLevel}`;
+            
+            // Atualiza versão
+            const footer = document.querySelector('.config-footer');
+            if (footer) footer.innerText = `${t('version')}: ${GAME_VERSION}`;
+        }
+
+        // --- LOJA (SHOP) ---
+        function openShop() {
+            document.getElementById('shop-overlay').style.display = 'flex';
+        }
+
+        function closeShop() {
+            document.getElementById('shop-overlay').style.display = 'none';
+        }
+
+        function buyCoins(amount, price) {
+            // Simula compra de moedas (integrar com sistema de pagamento real)
+            if (confirm(`Comprar ${amount} moedas por R$ ${price.toFixed(2)}?`)) {
+                coins += amount;
+                updateCoinDisplay();
+                closeShop();
+                alert(`✅ Você recebeu ${amount} moedas!`);
+            }
+        }
+
+        function buySkillWithCoins(skillName) {
+            const price = SKILL_PRICES[skillName];
+            
+            if (coins >= price) {
+                if (confirm(`Comprar 1 uso de ${skillName} por ${price} moedas?`)) {
+                    coins -= price;
+                    skillUses[skillName]++;
+                    updateCoinDisplay();
+                    updateSkillUI(skillName);
+                    closeShop();
+                    alert(`✅ Você comprou 1 uso de ${skillName}!`);
+                }
+            } else {
+                alert(`❌ Moedas insuficientes! Você precisa de ${price} moedas.`);
+            }
+        }
+
+        function buySkillWithAd(skillName) {
+            closeShop();
+            AdManager.showInterstitial(() => {
+                skillUses[skillName]++;
+                updateSkillUI(skillName);
+                alert(`✅ Você ganhou 1 uso de ${skillName}!`);
+            });
+        }
+
+        const boardEl = document.getElementById('game-board');
+        const levelDisplay = document.getElementById('level-display');
+        const coinDisplay = document.getElementById('coin-display');
+        const homeCoinDisplay = document.getElementById('home-coin-display');
+        const overlay = document.getElementById('overlay');
+        const modalContent = document.getElementById('modal-content');
+
+        // Função para atualizar display de moedas em ambos os lugares
+        function updateCoinDisplay() {
+            coinDisplay.innerText = coins;
+            homeCoinDisplay.innerText = coins;
+        }
+
+        // --- SISTEMA DE ANÚNCIOS ---
+        
+        // Gerenciador de Anúncios Intersticiais (Tela Cheia)
+        const AdManager = {
+            interstitialLoaded: false,
+            
+            // Inicializa os anúncios
+            init: function() {
+                // Carrega anúncios banner
+                this.loadBannerAd();
+                
+                // Pré-carrega anúncio intersticial
+                this.preloadInterstitial();
+            },
+            
+            // Carrega banner do AdSense
+            loadBannerAd: function() {
+                try {
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                } catch (e) {
+                    console.log('Banner ad not loaded:', e);
+                }
+            },
+            
+            // Pré-carrega anúncio intersticial
+            preloadInterstitial: function() {
+                // Simula carregamento (na versão real, use Google AdMob SDK)
+                setTimeout(() => {
+                    this.interstitialLoaded = true;
+                    console.log('Intersticial carregado');
+                }, 2000);
+            },
+            
+            // Mostra anúncio intersticial (tela cheia)
+            showInterstitial: function(callback) {
+                if (!this.interstitialLoaded) {
+                    console.log('Anúncio não carregado, simulando...');
+                    this.simulateAd(callback);
+                    return;
+                }
+                
+                // Aqui será integrado o código real do AdMob
+                // Por enquanto, simula o anúncio
+                this.simulateAd(callback);
+                
+                // Recarrega próximo anúncio
+                this.interstitialLoaded = false;
+                this.preloadInterstitial();
+            },
+            
+            // Simula anúncio para testes
+            simulateAd: function(callback) {
+                modalContent.innerHTML = `
+                    <h1>📺 PROPAGANDA</h1>
+                    <p>Assistindo anúncio...</p>
+                    <div style="font-size: 3rem; margin: 20px;">🎬</div>
+                    <div style="background: #333; color: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <p style="color: white; margin: 5px 0;">Anúncio simulado</p>
+                        <p style="color: #888; font-size: 0.9rem;">Na versão real, aqui será exibido<br>um anúncio do Google AdMob</p>
+                    </div>
+                    <p id="ad-countdown" style="color: #666;">Aguarde 3 segundos...</p>
+                `;
+                
+                let countdown = 3;
+                const countdownEl = document.getElementById('ad-countdown');
+                
+                const adTimer = setInterval(() => {
+                    countdown--;
+                    if (countdownEl) {
+                        countdownEl.innerText = countdown > 0 ? `Aguarde ${countdown} segundos...` : 'Fechando...';
+                    }
+                    
+                    if (countdown <= 0) {
+                        clearInterval(adTimer);
+                        if (callback) callback();
+                    }
+                }, 1000);
+            }
+        };
+        
+        // Inicializa sistema de anúncios quando página carregar
+        window.addEventListener('load', () => {
+            AdManager.init();
+            
+            // Inicializa versão do jogo
+            const versionElement = document.getElementById('game-version');
+            if (versionElement) {
+                versionElement.innerText = GAME_VERSION;
+            }
+            
+            // Inicializa seleção de idioma
+            updateLanguageModal();
+        });
+
+        // --- DEFINIÇÃO DE LAYOUTS (MAPAS) ---
+        // x, y: Posição em pixels (relativo ao centro 350x400)
+        // z: Camada (0 = base, 1 = meio, 2 = topo)
+        
+        // Helper para criar grade
+        function grid(col, row, layer) {
+            return { x: col * 55, y: row * 58, z: layer };
+        }
+
+        const LEVELS = {
+            1: { // Nível 1: Grade 4x4 Simples
+                layout: [
+                    // Base 4x4
+                    grid(1,1,0), grid(2,1,0), grid(3,1,0), grid(4,1,0),
+                    grid(1,2,0), grid(2,2,0), grid(3,2,0), grid(4,2,0),
+                    grid(1,3,0), grid(2,3,0), grid(3,3,0), grid(4,3,0),
+                    grid(1,4,0), grid(2,4,0), grid(3,4,0), grid(4,4,0),
+                    // Camada 1 - Centro 2x2
+                    grid(1.5,1.5,1), grid(2.5,1.5,1),
+                    grid(1.5,2.5,1), grid(2.5,2.5,1)
+                ],
+                typesCount: 4
+            },
+            2: { // Nível 2: Pirâmide 5 níveis
+                layout: [
+                    // Base 5x5
+                    grid(0,4,0), grid(1,4,0), grid(2,4,0), grid(3,4,0), grid(4,4,0),
+                    grid(0,3,0), grid(1,3,0), grid(2,3,0), grid(3,3,0), grid(4,3,0),
+                    // Camada 1 - 4x4
+                    grid(0.5,3.5,1), grid(1.5,3.5,1), grid(2.5,3.5,1), grid(3.5,3.5,1),
+                    grid(0.5,2.5,1), grid(1.5,2.5,1), grid(2.5,2.5,1), grid(3.5,2.5,1),
+                    // Camada 2 - 3x3
+                    grid(1,3,2), grid(2,3,2), grid(3,3,2),
+                    grid(1,2,2), grid(2,2,2), grid(3,2,2),
+                    // Camada 3 - 2x2
+                    grid(1.5,2.5,3), grid(2.5,2.5,3),
+                    grid(1.5,1.5,3), grid(2.5,1.5,3),
+                    // Topo
+                    grid(2,2,4), grid(2,1,4)
+                ],
+                typesCount: 5
+            },
+            3: { // Nível 3: Cruz Compacta
+                layout: [
+                    // Barra horizontal
+                    grid(0,2,0), grid(1,2,0), grid(2,2,0), grid(3,2,0), grid(4,2,0), grid(5,2,0),
+                    // Barra vertical
+                    grid(2,0,0), grid(2,1,0), grid(2,3,0), grid(2,4,0),
+                    // Centro empilhado - camada 1
+                    grid(1.5,1.5,1), grid(2.5,1.5,1),
+                    grid(1.5,2.5,1), grid(2.5,2.5,1),
+                    // Centro empilhado - camada 2
+                    grid(2,2,2), grid(2,1,2), grid(2,3,2),
+                    // Topo
+                    grid(2,2,3)
+                ],
+                typesCount: 6
+            },
+            4: { // Nível 4: Retângulo 6x4 com torres
+                layout: [
+                    // Base 6x4
+                    grid(1,1,0), grid(2,1,0), grid(3,1,0), grid(4,1,0), grid(5,1,0), grid(6,1,0),
+                    grid(1,2,0), grid(2,2,0), grid(3,2,0), grid(4,2,0), grid(5,2,0), grid(6,2,0),
+                    grid(1,3,0), grid(2,3,0), grid(3,3,0), grid(4,3,0), grid(5,3,0), grid(6,3,0),
+                    grid(1,4,0), grid(2,4,0), grid(3,4,0), grid(4,4,0), grid(5,4,0), grid(6,4,0),
+                    // Camada 1 - Laterais
+                    grid(1.5,1.5,1), grid(1.5,2.5,1),
+                    grid(5.5,1.5,1), grid(5.5,2.5,1),
+                    // Camada 2 - Centro
+                    grid(3,2,2), grid(4,2,2),
+                    grid(3,3,2), grid(4,3,2),
+                    // Topo
+                    grid(3.5,2.5,3), grid(3.5,2.5,4)
+                ],
+                typesCount: 7
+            },
+            5: { // Nível 5: Diamante
+                layout: [
+                    // Linha 1 (topo)
+                    grid(3,0,0),
+                    // Linha 2
+                    grid(2,1,0), grid(3,1,0), grid(4,1,0),
+                    // Linha 3
+                    grid(1,2,0), grid(2,2,0), grid(3,2,0), grid(4,2,0), grid(5,2,0),
+                    // Linha 4
+                    grid(2,3,0), grid(3,3,0), grid(4,3,0),
+                    // Linha 5 (base)
+                    grid(3,4,0),
+                    // Camada 1 - Centro
+                    grid(2.5,1.5,1), grid(3.5,1.5,1),
+                    grid(2.5,2.5,1), grid(3.5,2.5,1),
+                    // Camada 2
+                    grid(3,2,2), grid(3,1,2), grid(3,3,2),
+                    // Topo
+                    grid(3,2,3)
+                ],
+                typesCount: 7
+            },
+            6: { // Nível 6: Grade 5x5 Completa
+                layout: [
+                    grid(1,1,0), grid(2,1,0), grid(3,1,0), grid(4,1,0), grid(5,1,0),
+                    grid(1,2,0), grid(2,2,0), grid(3,2,0), grid(4,2,0), grid(5,2,0),
+                    grid(1,3,0), grid(2,3,0), grid(3,3,0), grid(4,3,0), grid(5,3,0),
+                    grid(1,4,0), grid(2,4,0), grid(3,4,0), grid(4,4,0), grid(5,4,0),
+                    grid(1,5,0), grid(2,5,0), grid(3,5,0), grid(4,5,0), grid(5,5,0),
+                    // Camada 1 - 3x3 centro
+                    grid(2,2,1), grid(3,2,1), grid(4,2,1),
+                    grid(2,3,1), grid(3,3,1), grid(4,3,1),
+                    grid(2,4,1), grid(3,4,1), grid(4,4,1),
+                    // Camada 2 - Cruz
+                    grid(3,2,2), grid(3,3,2), grid(3,4,2),
+                    grid(2,3,2), grid(4,3,2),
+                    // Topo
+                    grid(3,3,3)
+                ],
+                typesCount: 8
+            },
+            7: { // Nível 7: Escada Dupla
+                layout: [
+                    // Escada esquerda
+                    grid(0,4,0), grid(1,4,0),
+                    grid(0,3,0), grid(1,3,0), grid(2,3,0),
+                    grid(0,2,0), grid(1,2,0), grid(2,2,0), grid(3,2,0),
+                    grid(0,1,0), grid(1,1,0), grid(2,1,0), grid(3,1,0), grid(4,1,0),
+                    // Escada direita (espelhada)
+                    grid(4,4,0), grid(5,4,0),
+                    grid(3,3,0), grid(4,3,0), grid(5,3,0),
+                    grid(2,2,0), grid(3,2,0), grid(4,2,0), grid(5,2,0),
+                    // Camada 1 - Centro
+                    grid(2,2,1), grid(3,2,1),
+                    grid(2,3,1), grid(3,3,1),
+                    // Topo
+                    grid(2.5,2.5,2)
+                ],
+                typesCount: 8
+            },
+            8: { // Nível 8: Castelo
+                layout: [
+                    // Base
+                    grid(1,4,0), grid(2,4,0), grid(3,4,0), grid(4,4,0), grid(5,4,0),
+                    grid(1,3,0), grid(2,3,0), grid(3,3,0), grid(4,3,0), grid(5,3,0),
+                    // Torres laterais - camada 1
+                    grid(1,2,1), grid(1,1,1), grid(1,0,1),
+                    grid(5,2,1), grid(5,1,1), grid(5,0,1),
+                    // Centro - camada 1
+                    grid(2,2,1), grid(3,2,1), grid(4,2,1),
+                    grid(2,1,1), grid(3,1,1), grid(4,1,1),
+                    // Camada 2 - Torres
+                    grid(1,1,2), grid(5,1,2),
+                    // Camada 2 - Centro
+                    grid(2.5,1.5,2), grid(3.5,1.5,2),
+                    // Topo
+                    grid(3,1,3)
+                ],
+                typesCount: 9
+            }
+        };
+
+        // --- LÓGICA DE INICIALIZAÇÃO ---
+
+        function startLevel(lvl) {
+            currentLevel = lvl;
+            levelDisplay.innerText = t('level') + " " + currentLevel;
+            overlay.style.display = 'none';
+            tilesInTray = [];
+            tilesOnBoard = [];
+            boardEl.innerHTML = '';
+            updateTrayUI();
+
+            // 1. Carrega Layout
+            let config = LEVELS[currentLevel];
+            if (!config) {
+                // Se acabou os níveis, volta pro 1 ou gera random (aqui volta pro 1)
+                config = LEVELS[1];
+                const completeMsg = currentLanguage === 'pt' ? 'Você zerou o protótipo! Voltando ao Nível 1.' : 
+                                   currentLanguage === 'en' ? 'You completed the prototype! Back to Level 1.' : 
+                                   '¡Completaste el prototipo! Volviendo al Nivel 1.';
+                alert(completeMsg);
+                currentLevel = 1;
+                levelDisplay.innerText = t('level') + " 1";
+            }
+
+            // 2. Prepara Tipos de Peças (Garantir trios)
+            const totalSlots = config.layout.length;
+            
+            // IMPORTANTE: Total DEVE ser divisível por 3 para garantir que todas as peças formem trios
+            const workableSlots = Math.floor(totalSlots / 3) * 3; // Força divisibilidade por 3
+            const layoutToUse = config.layout.slice(0, workableSlots);
+            
+            const triosNeeded = workableSlots / 3;
+            
+            // Seleciona frutas aleatórias (limitado pelo typesCount do nível)
+            let availableTypes = [...ALL_TILE_TYPES].sort(() => 0.5 - Math.random()).slice(0, config.typesCount);
+            
+            // NOVA LÓGICA: Distribui trios completos de forma equilibrada
+            let typesPool = [];
+            
+            // Calcula quantos trios cada tipo deve ter (distribuição equilibrada)
+            const triosPerType = Math.floor(triosNeeded / availableTypes.length);
+            const remainingTrios = triosNeeded % availableTypes.length;
+            
+            // Adiciona trios equilibrados para cada tipo
+            availableTypes.forEach((type, index) => {
+                const trios = triosPerType + (index < remainingTrios ? 1 : 0);
+                for (let i = 0; i < trios; i++) {
+                    typesPool.push(type, type, type); // Sempre 3 peças por trio
+                }
+            });
+
+            // Embaralha a piscina de peças
+            typesPool.sort(() => 0.5 - Math.random());
+
+            // 3. Cria as peças no Tabuleiro
+            layoutToUse.forEach((pos, index) => {
+                createTile(typesPool[index], pos.x, pos.y, pos.z);
+            });
+
+            // 4. Calcula bloqueios iniciais
+            checkBlockedTiles();
+        }
+
+        function createTile(type, x, y, z) {
+            const tile = {
+                id: Math.random().toString(36),
+                type: type,
+                x: x, y: y, z: z,
+                el: null,
+                blocked: false
+            };
+
+            const el = document.createElement('div');
+            el.classList.add('tile');
+            el.innerText = type;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            // Ajusta brilho baseado na camada para dar profundidade
+            el.style.zIndex = 10 + z; 
+            if (z === 0) el.style.backgroundColor = "#eee"; 
+
+            el.onclick = () => handleTileClick(tile);
+            
+            boardEl.appendChild(el);
+            tile.el = el;
+            tilesOnBoard.push(tile);
+        }
+
+        // --- LÓGICA DE JOGO ---
+
+        function checkBlockedTiles() {
+            tilesOnBoard.forEach(lower => {
+                lower.blocked = false;
+                // Procura se tem alguém em cima
+                for (let upper of tilesOnBoard) {
+                    if (upper === lower) continue;
+                    // Se está numa camada superior
+                    if (upper.z > lower.z) {
+                        // Check de colisão simples (centro a centro)
+                        const dist = Math.hypot(upper.x - lower.x, upper.y - lower.y);
+                        // Se estiver muito perto (sobrepondo), bloqueia
+                        if (dist < 45) { // 45px de raio de bloqueio
+                            lower.blocked = true;
+                            break;
+                        }
+                    }
+                }
+                // Update Visual
+                if (lower.blocked) lower.el.classList.add('blocked');
+                else lower.el.classList.remove('blocked');
+            });
+        }
+
+        function handleTileClick(tile) {
+            if (tile.blocked || isProcessing) return;
+            
+            // Game Over check prévio
+            if (tilesInTray.length >= TRAY_CAPACITY) return;
+
+            // Salva para undo
+            lastMove = { tile: tile, boardState: [...tilesOnBoard], trayState: [...tilesInTray] };
+
+            // 1. Move dados
+            tilesOnBoard = tilesOnBoard.filter(t => t !== tile);
+            tilesInTray.push(tile);
+
+            // 2. Animação visual simples (some do board)
+            tile.el.style.display = 'none'; // No futuro, animar voando
+            
+            // 3. Recalcula bloqueios e tabuleiro
+            checkBlockedTiles();
+            updateTrayUI();
+
+            // 4. Verifica Match (com pequeno delay visual)
+            isProcessing = true;
+            setTimeout(() => {
+                checkMatch();
+                isProcessing = false;
+                checkGameState();
+            }, 200);
+        }
+
+        function updateTrayUI() {
+            const slots = document.querySelectorAll('.slot');
+            slots.forEach(s => s.innerHTML = '');
+
+            // Ordena peças na bandeja para facilitar visualização do match
+            let displayList = [...tilesInTray]; 
+
+            displayList.forEach((tile, i) => {
+                if (i < 7 && slots[i]) {
+                    const el = document.createElement('div');
+                    el.className = 'tile';
+                    el.style.position = 'static';
+                    el.style.boxShadow = 'none';
+                    el.style.border = '1px solid #ccc';
+                    el.style.transform = 'none';
+                    el.innerText = tile.type;
+                    slots[i].appendChild(el);
+                }
+            });
+        }
+
+        function checkMatch() {
+            const counts = {};
+            tilesInTray.forEach(t => counts[t.type] = (counts[t.type] || 0) + 1);
+
+            for (let type in counts) {
+                if (counts[type] >= 3) {
+                    // Remove 3
+                    let removed = 0;
+                    tilesInTray = tilesInTray.filter(t => {
+                        if (t.type === type && removed < 3) {
+                            removed++;
+                            // Animação de pontos aqui
+                            addCoins(10);
+                            return false;
+                        }
+                        return true;
+                    });
+                    updateTrayUI();
+                    break; // Só um match por vez
+                }
+            }
+        }
+
+        function checkGameState() {
+            // Primeiro verifica vitória
+            if (tilesOnBoard.length === 0 && tilesInTray.length === 0) {
+                showWinModal();
+                return;
+            }
+            
+            // Verifica Game Over SOMENTE se não há possibilidade de match
+            // Não verifica se a bandeja está "quase cheia" - só quando realmente sem espaço
+            if (tilesInTray.length >= TRAY_CAPACITY) {
+                // Verifica se há algum trio prestes a formar
+                const counts = {};
+                tilesInTray.forEach(t => counts[t.type] = (counts[t.type] || 0) + 1);
+                
+                // Se algum tipo já tem 3+, não é game over ainda (o match vai processar)
+                for (let type in counts) {
+                    if (counts[type] >= 3) {
+                        return; // Não mostra game over, deixa o match processar
+                    }
+                }
+                
+                // Só mostra game over se realmente não há matches possíveis
+                showLoseModal();
+            }
+        }
+        
+        function hasValidMoves() {
+            // Verifica se há pelo menos uma peça não bloqueada
+            const availableTiles = tilesOnBoard.filter(t => !t.blocked);
+            if (availableTiles.length === 0) return false;
+            
+            // Verifica se consegue completar pelo menos um trio com as peças disponíveis
+            const allTiles = [...tilesOnBoard, ...tilesInTray];
+            const typeCounts = {};
+            allTiles.forEach(t => {
+                typeCounts[t.type] = (typeCounts[t.type] || 0) + 1;
+            });
+            
+            // Se algum tipo tem menos de 3 peças no total, é impossível completar
+            for (let type in typeCounts) {
+                if (typeCounts[type] % 3 !== 0) {
+                    console.error('Erro no nível: Tipo', type, 'tem', typeCounts[type], 'peças (não divisível por 3)');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        function showNoMovesModal() {
+            modalContent.innerHTML = `
+                <h1>⚠️ SEM JOGADAS!</h1>
+                <p>Não há mais movimentos possíveis</p>
+                <div style="font-size: 3rem; margin: 20px;">🔄</div>
+                <button class="btn-primary" onclick="retryLevel()">REINICIAR NÍVEL</button>
+            `;
+            overlay.style.display = 'flex';
+        }
+
+        function addCoins(amount) {
+            coins += amount;
+            updateCoinDisplay();
+            // Efeito visual simples (piscar)
+            coinDisplay.style.color = 'green';
+            setTimeout(() => coinDisplay.style.color = '#333', 300);
+        }
+
+        // --- SISTEMA DE SKILLS ---
+        
+        function useSkill(skillType) {
+            // Verifica se tem usos disponíveis
+            if (skillUses[skillType] <= 0) {
+                // Mostra modal de compra/propaganda
+                showUnlockModal(skillType);
+                return;
+            }
+            
+            // Usa a skill
+            skillUses[skillType]--;
+            updateSkillCounter(skillType);
+            
+            switch(skillType) {
+                case 'undo':
+                    undoLastMove();
+                    break;
+                case 'shuffle':
+                    shuffleBoard();
+                    break;
+                case 'hint':
+                    showHint();
+                    break;
+            }
+        }
+        
+        function updateSkillCounter(skillType) {
+            const counter = document.getElementById(`${skillType}-counter`);
+            const lock = document.getElementById(`${skillType}-lock`);
+            
+            if (skillUses[skillType] > 0) {
+                counter.style.display = 'flex';
+                counter.innerText = skillUses[skillType];
+                lock.style.display = 'none';
+            } else {
+                counter.style.display = 'none';
+                lock.style.display = 'flex';
+            }
+        }
+        
+        function showUnlockModal(skillType) {
+            const price = SKILL_PRICES[skillType];
+            const skillNames = {
+                undo: '↩️',
+                shuffle: '🔀',
+                hint: '💡'
+            };
+            
+            const skillNamesText = {
+                undo: 'Desfazer',
+                shuffle: 'Embaralhar',
+                hint: 'Dica'
+            };
+            
+            const skillDescriptions = {
+                undo: 'Remove a última peça da bandeja',
+                shuffle: 'Reorganiza as peças no tabuleiro',
+                hint: 'Destaca uma peça disponível'
+            };
+            
+            modalContent.innerHTML = `
+                <div style="position: relative;">
+                    <h1 style="font-size: 1.8rem; margin: 0 0 15px 0; color: #2c3e50;">Skill</h1>
+                    <div style="font-size: 3.5rem; margin: 15px 0; background: linear-gradient(135deg, #60a3f8, #4a90e2); width: 80px; height: 80px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 15px auto; box-shadow: 0 4px 15px rgba(74,144,226,0.3);">${skillNames[skillType]}</div>
+                    
+                    <h2 style="color: #333; margin: 10px 0; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        ${skillNamesText[skillType]} ${skillNames[skillType]}
+                    </h2>
+                    <p style="color: #7f8c8d; font-size: 0.95rem; margin: 8px 0;">${skillDescriptions[skillType]}</p>
+                    <p style="color: #95a5a6; font-size: 0.85rem; margin: 12px 0;">Cada compra = 1 uso</p>
+                    
+                    <div style="background: #ecf0f1; padding: 12px; border-radius: 10px; margin: 15px 0;">
+                        <p style="color: #2c3e50; font-weight: bold; margin: 0; font-size: 0.95rem;">Escolha uma opção:</p>
+                    </div>
+                    
+                    <!-- Opção 1: Moedas -->
+                    <div style="background: white; border: 3px solid #f39c12; border-radius: 12px; padding: 12px 15px; margin: 10px 0;">
+                        <div style="font-size: 1.5rem; color: #f39c12; font-weight: bold; margin-bottom: 8px;">
+                            💰 ${price} moedas
+                        </div>
+                        <p style="color: ${coins >= price ? '#27ae60' : '#e74c3c'}; font-weight: bold; margin: 8px 0; font-size: 0.9rem;">
+                            Você tem: ${coins} moedas
+                        </p>
+                        ${coins >= price ? 
+                            `<button onclick="unlockSkillWithCoins('${skillType}')" style="background: linear-gradient(135deg, #27ae60, #229954); color: white; border: none; border-radius: 25px; padding: 12px 25px; font-size: 1rem; font-weight: bold; width: 100%; cursor: pointer; box-shadow: 0 3px 10px rgba(39,174,96,0.3); margin-top: 5px;">COMPRAR COM MOEDAS</button>` :
+                            `<button style="background: #bdc3c7; color: white; border: none; border-radius: 25px; padding: 12px 25px; font-size: 1rem; font-weight: bold; width: 100%; cursor: not-allowed; margin-top: 5px; opacity: 0.6;">MOEDAS INSUFICIENTES</button>`
+                        }
+                    </div>
+                    
+                    <!-- Opção 2: Propaganda -->
+                    <div style="background: white; border: 3px solid #00d2d3; border-radius: 12px; padding: 12px 15px; margin: 10px 0;">
+                        <div style="font-size: 1.5rem; color: #00d2d3; font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            📺 Assistir Anúncio
+                        </div>
+                        <p style="color: #7f8c8d; margin: 8px 0; font-size: 0.9rem;">
+                            Ganhe 1 uso grátis
+                        </p>
+                        <button onclick="unlockSkillWithAd('${skillType}')" style="background: linear-gradient(135deg, #00d084, #00a368); color: white; border: none; border-radius: 25px; padding: 12px 25px; font-size: 1rem; font-weight: bold; width: 100%; cursor: pointer; box-shadow: 0 3px 10px rgba(0,208,132,0.3); margin-top: 5px;">
+                            VER ANÚNCIO GRÁTIS
+                        </button>
+                    </div>
+                    
+                    <button onclick="overlay.style.display='none'" style="position: absolute; top: -15px; right: -15px; background: #e74c3c; border: 2px solid white; border-radius: 50%; width: 40px; height: 40px; font-size: 1.3rem; color: white; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.3); font-weight: bold; display: flex; align-items: center; justify-content: center;">✕</button>
+                </div>
+            `;
+            overlay.style.display = 'flex';
+        }
+        
+        function unlockSkillWithCoins(skillType) {
+            const price = SKILL_PRICES[skillType];
+            
+            if (coins >= price) {
+                coins -= price;
+                updateCoinDisplay();
+                skillUses[skillType]++;
+                updateSkillCounter(skillType);
+                
+                // Mostra mensagem de sucesso
+                modalContent.innerHTML = `
+                    <h1>✅ COMPRADO!</h1>
+                    <div style="font-size: 4rem; margin: 20px;">🎉</div>
+                    <p style="color: #27ae60; font-size: 1.2rem; font-weight: bold;">
+                        +1 uso adicionado!
+                    </p>
+                    <p style="color: #666;">Usos disponíveis: ${skillUses[skillType]}</p>
+                    <button class="btn-primary" onclick="overlay.style.display='none'">OK</button>
+                `;
+            }
+        }
+        
+        function unlockSkillWithAd(skillType) {
+            overlay.style.display = 'none';
+            
+            // Mostra anúncio
+            AdManager.showInterstitial(() => {
+                // Após o anúncio, adiciona 1 uso
+                skillUses[skillType]++;
+                updateSkillCounter(skillType);
+                
+                // Mostra mensagem de sucesso
+                modalContent.innerHTML = `
+                    <h1>✅ DESBLOQUEADO!</h1>
+                    <div style="font-size: 4rem; margin: 20px;">🎁</div>
+                    <p style="color: #27ae60; font-size: 1.2rem; font-weight: bold;">
+                        +1 uso adicionado gratuitamente!
+                    </p>
+                    <p style="color: #666;">Usos disponíveis: ${skillUses[skillType]}</p>
+                    <button class="btn-primary" onclick="overlay.style.display='none'">OK</button>
+                `;
+                overlay.style.display = 'flex';
+            });
+        }
+        
+        // Skills funcionais
+        let lastMove = null; // Guarda última jogada para undo
+        
+        function undoLastMove() {
+            if (!lastMove || tilesInTray.length === 0) {
+                alert('Nenhuma jogada para desfazer!');
+                return;
+            }
+            
+            // Remove última peça da bandeja
+            const lastTile = tilesInTray.pop();
+            
+            // Retorna ao tabuleiro
+            tilesOnBoard.push(lastTile);
+            
+            // Recria elemento visual
+            const el = document.createElement('div');
+            el.classList.add('tile');
+            el.innerText = lastTile.type;
+            el.style.left = lastTile.x + 'px';
+            el.style.top = lastTile.y + 'px';
+            el.style.zIndex = 10 + lastTile.z;
+            if (lastTile.z === 0) el.style.backgroundColor = "#eee";
+            el.onclick = () => handleTileClick(lastTile);
+            boardEl.appendChild(el);
+            lastTile.el = el;
+            
+            checkBlockedTiles();
+            updateTrayUI();
+            lastMove = null;
+        }
+
+        function shuffleBoard() {
+            // Embaralha tipos no board
+            const types = tilesOnBoard.map(t => t.type);
+            types.sort(() => Math.random() - 0.5);
+            tilesOnBoard.forEach((t, i) => {
+                t.type = types[i];
+                t.el.innerText = t.type;
+            });
+        }
+        
+        function showHint() {
+            // Encontra primeira peça não bloqueada
+            const availableTile = tilesOnBoard.find(t => !t.blocked);
+            
+            if (availableTile && availableTile.el) {
+                // Destaca a peça
+                availableTile.el.style.border = '3px solid #f39c12';
+                availableTile.el.style.boxShadow = '0 0 20px #f39c12';
+                
+                // Remove destaque após 2 segundos
+                setTimeout(() => {
+                    availableTile.el.style.border = '1px solid #eee';
+                    availableTile.el.style.boxShadow = 'inset 0 -4px 0 #dcdcdc, 0 4px 0 #bbb, 0 6px 6px rgba(0,0,0,0.3)';
+                }, 2000);
+            }
+        }
+
+        // --- MODAIS ---
+
+        function showWinModal() {
+            // Calcula recompensa de moedas
+            const coinReward = currentLevel * 50; // 50 moedas por nível
+            
+            // Cria confetes
+            createConfetti();
+            
+            modalContent.innerHTML = `
+                <div class="victory-screen">
+                    <div class="victory-banner">
+                        <p class="victory-title">${t('levelComplete')}</p>
+                        <h1 class="victory-level">${t('level').toUpperCase()} ${currentLevel}</h1>
+                    </div>
+                    
+                    <div class="coin-reward">
+                        <div class="coin-icon">💰</div>
+                        <p style="color: #666; margin: 5px 0;">${t('reward')}</p>
+                        <div class="coin-amount">+${coinReward} ${currentLanguage === 'en' ? 'coins' : currentLanguage === 'es' ? 'monedas' : 'moedas'}</div>
+                    </div>
+                    
+                    <div class="next-level-box" onclick="nextLevel()">
+                        <p class="next-level-text">${t('level')} ${currentLevel + 1}</p>
+                    </div>
+                </div>
+            `;
+            overlay.style.display = 'flex';
+            
+            // Adiciona moedas após 1 segundo (durante animação)
+            setTimeout(() => {
+                addCoins(coinReward);
+            }, 1000);
+        }
+        
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#00d2d3'];
+            const confettiCount = 50;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(confetti);
+                
+                // Remove após animação
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+
+        function showLoseModal() {
+            // Salva estado do jogo
+            gameOverState = {
+                boardTiles: [...tilesOnBoard],
+                trayTiles: [...tilesInTray],
+                level: currentLevel
+            };
+            
+            // Mostra modal com contador
+            countdownSeconds = 5;
+            const trayFullText = currentLanguage === 'pt' ? 'BANDEJA CHEIA!' : currentLanguage === 'en' ? 'TRAY FULL!' : '¡BANDEJA LLENA!';
+            const watchAdText = currentLanguage === 'pt' ? 'Assista um anúncio para continuar' : currentLanguage === 'en' ? 'Watch an ad to continue' : 'Mira un anuncio para continuar';
+            const waitText = currentLanguage === 'pt' ? 'Ou aguarde' : currentLanguage === 'en' ? 'Or wait' : 'O espera';
+            const restartText = currentLanguage === 'pt' ? 's para reiniciar' : currentLanguage === 'en' ? 's to restart' : 's para reiniciar';
+            
+            modalContent.innerHTML = `
+                <h1>${trayFullText}</h1>
+                <p>${watchAdText}</p>
+                <div class="countdown-circle">
+                    <div class="countdown-ring"></div>
+                    <div class="countdown-number" id="countdown-num">5</div>
+                </div>
+                <button class="btn-continue" onclick="watchAdAndContinue()">
+                    ▶ ${t('continueGame')} (${currentLanguage === 'pt' ? 'Anúncio' : currentLanguage === 'en' ? 'Ad' : 'Anuncio'})
+                </button>
+                <p style="font-size: 0.9rem; color: #999; margin-top: 10px;">${waitText} ${countdownSeconds}${restartText}</p>
+            `;
+            overlay.style.display = 'flex';
+            
+            // Inicia contagem regressiva
+            startCountdown();
+        }
+        
+        function startCountdown() {
+            const countdownEl = document.getElementById('countdown-num');
+            if (!countdownEl) return;
+            
+            countdownTimer = setInterval(() => {
+                countdownSeconds--;
+                countdownEl.innerText = countdownSeconds;
+                
+                if (countdownSeconds <= 0) {
+                    clearInterval(countdownTimer);
+                    // Tempo esgotado - reinicia o nível
+                    autoRetryLevel();
+                }
+            }, 1000);
+        }
+        
+        function watchAdAndContinue() {
+            // Para o contador
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+            
+            // Mostra anúncio intersticial usando o AdManager
+            AdManager.showInterstitial(() => {
+                // Callback: executado após o anúncio
+                restoreGameState();
+            });
+        }
+        
+        // Valida se todos os tipos de peças têm contagem divisível por 3
+        function validateTrioRule(tiles) {
+            const typeCounts = {};
+            tiles.forEach(t => {
+                typeCounts[t.type] = (typeCounts[t.type] || 0) + 1;
+            });
+            
+            // Todos os tipos devem ter contagem divisível por 3
+            for (let type in typeCounts) {
+                if (typeCounts[type] % 3 !== 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function restoreGameState() {
+            if (!gameOverState) return;
+            
+            // Restaura estado salvo
+            tilesOnBoard = gameOverState.boardTiles;
+            tilesInTray = gameOverState.trayTiles;
+            
+            // Remove peças da bandeja de forma inteligente para manter a regra de divisibilidade por 3
+            if (tilesInTray.length > 0) {
+                // Conta tipos de peças na bandeja
+                const trayTypeCounts = {};
+                tilesInTray.forEach(t => {
+                    trayTypeCounts[t.type] = (trayTypeCounts[t.type] || 0) + 1;
+                });
+                
+                // Estratégia 1: Encontrar tipos com contagem não-divisível por 3 e remover para corrigir
+                const typesToFix = [];
+                for (let type in trayTypeCounts) {
+                    const count = trayTypeCounts[type];
+                    const remainder = count % 3;
+                    if (remainder !== 0) {
+                        typesToFix.push({ type, removeCount: remainder });
+                    }
+                }
+                
+                // Se há tipos para corrigir, remove o necessário
+                if (typesToFix.length > 0) {
+                    typesToFix.forEach(fix => {
+                        for (let i = 0; i < fix.removeCount; i++) {
+                            const indexToRemove = tilesInTray.findIndex(t => t.type === fix.type);
+                            if (indexToRemove !== -1) {
+                                tilesInTray.splice(indexToRemove, 1);
+                            }
+                        }
+                    });
+                } else {
+                    // Estratégia 2: Se todos já são divisíveis por 3, remove um trio completo
+                    // (pega o primeiro tipo e remove 3 dele)
+                    const firstType = tilesInTray[0].type;
+                    for (let i = 0; i < 3; i++) {
+                        const indexToRemove = tilesInTray.findIndex(t => t.type === firstType);
+                        if (indexToRemove !== -1) {
+                            tilesInTray.splice(indexToRemove, 1);
+                        }
+                    }
+                }
+                
+                // Validação final: Garante que todas as peças (tabuleiro + bandeja) respeitam a regra
+                const allTiles = [...tilesOnBoard, ...tilesInTray];
+                if (!validateTrioRule(allTiles)) {
+                    console.warn('Aviso: Estado restaurado não respeita regra de trio. Reiniciando nível.');
+                    startLevel(currentLevel);
+                    return;
+                }
+            }
+            
+            // Recria o tabuleiro
+            boardEl.innerHTML = '';
+            tilesOnBoard.forEach(tile => {
+                const el = document.createElement('div');
+                el.classList.add('tile');
+                el.innerText = tile.type;
+                el.style.left = tile.x + 'px';
+                el.style.top = tile.y + 'px';
+                el.style.zIndex = 10 + tile.z;
+                if (tile.z === 0) el.style.backgroundColor = "#eee";
+                el.onclick = () => handleTileClick(tile);
+                boardEl.appendChild(el);
+                tile.el = el;
+            });
+            
+            checkBlockedTiles();
+            updateTrayUI();
+            overlay.style.display = 'none';
+            gameOverState = null;
+        }
+        
+        function autoRetryLevel() {
+            // Tempo esgotado - reinicia o nível
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+            gameOverState = null;
+            retryLevel();
+        }
+
+        function nextLevel() {
+            startLevel(currentLevel + 1);
+        }
+
+        function retryLevel() {
+            // Para qualquer contador ativo
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+            gameOverState = null;
+            startLevel(currentLevel);
+        }
+
+        // INÍCIO
+        startLevel(1);
+
+    </script>
+</body>
+</html>
