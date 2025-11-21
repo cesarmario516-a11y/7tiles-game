@@ -1065,6 +1065,11 @@
 </head>
 <body>
 
+    <!-- MÚSICA DE FUNDO -->
+    <audio id="background-music" loop>
+        <source src="background-music.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- HOME SCREEN -->
     <div id="home-screen">
         <!-- Moedas no topo da Home -->
@@ -1530,8 +1535,10 @@
             const toggle = document.getElementById('music-toggle');
             if (settings.music) {
                 toggle.classList.remove('off');
+                toggleMusicState(true);
             } else {
                 toggle.classList.add('off');
+                toggleMusicState(false);
             }
         }
 
@@ -1554,6 +1561,35 @@
                 toggle.classList.add('off');
             }
         }
+
+        // --- SISTEMA DE MÚSICA ---
+        const bgMusic = document.getElementById('background-music');
+        let isMusicEnabled = true;
+
+        function initMusic() {
+            // Tenta tocar a música quando o usuário interagir pela primeira vez
+            bgMusic.volume = 0.3; // Volume a 30%
+            if (isMusicEnabled) {
+                bgMusic.play().catch(err => {
+                    console.log('Música será reproduzida após interação do usuário');
+                });
+            }
+        }
+
+        function toggleMusicState(enabled) {
+            isMusicEnabled = enabled;
+            if (enabled) {
+                bgMusic.play().catch(err => console.log('Erro ao tocar música:', err));
+            } else {
+                bgMusic.pause();
+            }
+        }
+
+        // Inicia música quando usuário clicar em qualquer lugar (primeira interação)
+        document.addEventListener('click', function initOnClick() {
+            initMusic();
+            document.removeEventListener('click', initOnClick);
+        }, { once: true });
 
         // --- SISTEMA DE IDIOMAS ---
         let selectedLanguage = 'pt'; // Temporário para seleção no modal
