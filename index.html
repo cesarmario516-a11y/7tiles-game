@@ -965,6 +965,43 @@
             transform: translateY(0);
         }
 
+        .level-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            min-width: 60px;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .level-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(52,152,219,0.4);
+        }
+
+        .level-btn:active {
+            transform: translateY(0);
+        }
+
+        .level-btn.completed {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .level-btn.locked {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
         .btn-primary {
             margin-top: 20px;
             padding: 15px 40px;
@@ -1106,6 +1143,10 @@
         <p class="current-level-display" id="home-level-display">Nível 1</p>
         
         <button class="home-button" onclick="startGame()">Nível 1</button>
+        
+        <button class="home-button" onclick="openLevelSelector()" style="margin-top: 15px; background: linear-gradient(135deg, #9b59b6, #8e44ad); font-size: 1.2rem;">
+            📋 Selecionar Nível
+        </button>
         
         <button class="nav-btn" onclick="openConfig()" style="position: absolute; top: 20px; right: 20px; z-index: 10;">
             ⚙️
@@ -1253,6 +1294,21 @@
         </div>
     </div>
 
+    <!-- LEVEL SELECTOR MODAL -->
+    <div id="level-selector-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 300; backdrop-filter: blur(5px);">
+        <div class="language-modal" style="max-height: 80vh; overflow-y: auto;">
+            <div class="language-header">
+                <h2 class="language-title">📋 Selecionar Nível</h2>
+                <button class="language-close" onclick="closeLevelSelector()">✖</button>
+            </div>
+            <div class="language-content" style="max-height: 60vh; overflow-y: auto;">
+                <div id="level-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 10px;">
+                    <!-- Níveis serão gerados dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- SHOP MODAL -->
     <div id="shop-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 250; backdrop-filter: blur(5px);">
         <div class="shop-modal">
@@ -1372,8 +1428,21 @@
     <script>
         // --- CONFIGURAÇÕES ---
         const TRAY_CAPACITY = 7;
-        // Lista expandida de frutas para níveis mais difíceis
-        const ALL_TILE_TYPES = ['🍎', '🍌', '🍇', '🍉', '🍊', '🍓', '🍍', '🥝', '🍒', '🍑', '🍋', '🍐'];
+        
+        // Categorias de tiles para progressão de dificuldade
+        const TILE_CATEGORIES = {
+            fruits: ['🍎', '🍌', '🍇', '🍉', '🍊', '🍓', '🍍', '🥝', '🍒', '🍑', '🍋', '🍐', '🥭', '🍈', '🫐', '🥥'],
+            flowers: ['🌸', '🌺', '🌼', '🌻', '🌷', '🌹', '🏵️', '💐', '🥀', '🪷', '🌵', '🍄'],
+            animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔'],
+            objects: ['⚽', '🎾', '🎱', '🎯', '🎲', '🧸', '🎮', '🎪', '🎨', '🎭', '🎺', '🎸', '🔔', '🔑', '🔨', '⚙️', '🔧', '🪛', '🧤', '🥛', '☕', '🍵']
+        };
+        
+        const ALL_TILE_TYPES = [
+            ...TILE_CATEGORIES.fruits,
+            ...TILE_CATEGORIES.flowers,
+            ...TILE_CATEGORIES.animals,
+            ...TILE_CATEGORIES.objects
+        ];
         
         // Versão do jogo (atualizar a cada nova versão)
         const GAME_VERSION = '1.0.0';
@@ -1835,6 +1904,39 @@
             updateLanguage();
             closeLanguageModal();
         }
+
+        // --- SISTEMA DE SELETOR DE NÍVEIS ---
+        function openLevelSelector() {
+            playClickSound();
+            const levelGrid = document.getElementById('level-grid');
+            levelGrid.innerHTML = '';
+            
+            // Gera botões para todos os 100 níveis
+            for (let i = 1; i <= 100; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'level-btn';
+                btn.innerText = i;
+                btn.onclick = () => selectAndStartLevel(i);
+                levelGrid.appendChild(btn);
+            }
+            
+            document.getElementById('level-selector-overlay').style.display = 'flex';
+        }
+        
+        function closeLevelSelector() {
+            playClickSound();
+            document.getElementById('level-selector-overlay').style.display = 'none';
+        }
+        
+        function selectAndStartLevel(level) {
+            playClickSound();
+            currentLevel = level;
+            closeLevelSelector();
+            document.getElementById('home-screen').style.display = 'none';
+            document.getElementById('nav-buttons').style.display = 'flex';
+            startLevel(currentLevel);
+            scheduleNotification();
+        }
         
         function changeLanguage(lang) {
             currentLanguage = lang;
@@ -2056,154 +2158,86 @@
             return { x: col * 55, y: row * 58, z: layer };
         }
 
-        const LEVELS = {
-            1: { // Nível 1: Grade 4x4 Simples
-                layout: [
-                    // Base 4x4
-                    grid(1,1,0), grid(2,1,0), grid(3,1,0), grid(4,1,0),
-                    grid(1,2,0), grid(2,2,0), grid(3,2,0), grid(4,2,0),
-                    grid(1,3,0), grid(2,3,0), grid(3,3,0), grid(4,3,0),
-                    grid(1,4,0), grid(2,4,0), grid(3,4,0), grid(4,4,0),
-                    // Camada 1 - Centro 2x2
-                    grid(1.5,1.5,1), grid(2.5,1.5,1),
-                    grid(1.5,2.5,1), grid(2.5,2.5,1)
-                ],
-                typesCount: 4
-            },
-            2: { // Nível 2: Pirâmide 5 níveis
-                layout: [
-                    // Base 5x5
-                    grid(0,4,0), grid(1,4,0), grid(2,4,0), grid(3,4,0), grid(4,4,0),
-                    grid(0,3,0), grid(1,3,0), grid(2,3,0), grid(3,3,0), grid(4,3,0),
-                    // Camada 1 - 4x4
-                    grid(0.5,3.5,1), grid(1.5,3.5,1), grid(2.5,3.5,1), grid(3.5,3.5,1),
-                    grid(0.5,2.5,1), grid(1.5,2.5,1), grid(2.5,2.5,1), grid(3.5,2.5,1),
-                    // Camada 2 - 3x3
-                    grid(1,3,2), grid(2,3,2), grid(3,3,2),
-                    grid(1,2,2), grid(2,2,2), grid(3,2,2),
-                    // Camada 3 - 2x2
-                    grid(1.5,2.5,3), grid(2.5,2.5,3),
-                    grid(1.5,1.5,3), grid(2.5,1.5,3),
-                    // Topo
-                    grid(2,2,4), grid(2,1,4)
-                ],
-                typesCount: 5
-            },
-            3: { // Nível 3: Cruz Compacta
-                layout: [
-                    // Barra horizontal
-                    grid(0,2,0), grid(1,2,0), grid(2,2,0), grid(3,2,0), grid(4,2,0), grid(5,2,0),
-                    // Barra vertical
-                    grid(2,0,0), grid(2,1,0), grid(2,3,0), grid(2,4,0),
-                    // Centro empilhado - camada 1
-                    grid(1.5,1.5,1), grid(2.5,1.5,1),
-                    grid(1.5,2.5,1), grid(2.5,2.5,1),
-                    // Centro empilhado - camada 2
-                    grid(2,2,2), grid(2,1,2), grid(2,3,2),
-                    // Topo
-                    grid(2,2,3)
-                ],
-                typesCount: 6
-            },
-            4: { // Nível 4: Retângulo 6x4 com torres
-                layout: [
-                    // Base 6x4
-                    grid(1,1,0), grid(2,1,0), grid(3,1,0), grid(4,1,0), grid(5,1,0), grid(6,1,0),
-                    grid(1,2,0), grid(2,2,0), grid(3,2,0), grid(4,2,0), grid(5,2,0), grid(6,2,0),
-                    grid(1,3,0), grid(2,3,0), grid(3,3,0), grid(4,3,0), grid(5,3,0), grid(6,3,0),
-                    grid(1,4,0), grid(2,4,0), grid(3,4,0), grid(4,4,0), grid(5,4,0), grid(6,4,0),
-                    // Camada 1 - Laterais
-                    grid(1.5,1.5,1), grid(1.5,2.5,1),
-                    grid(5.5,1.5,1), grid(5.5,2.5,1),
-                    // Camada 2 - Centro
-                    grid(3,2,2), grid(4,2,2),
-                    grid(3,3,2), grid(4,3,2),
-                    // Topo
-                    grid(3.5,2.5,3), grid(3.5,2.5,4)
-                ],
-                typesCount: 7
-            },
-            5: { // Nível 5: Diamante
-                layout: [
-                    // Linha 1 (topo)
-                    grid(3,0,0),
-                    // Linha 2
-                    grid(2,1,0), grid(3,1,0), grid(4,1,0),
-                    // Linha 3
-                    grid(1,2,0), grid(2,2,0), grid(3,2,0), grid(4,2,0), grid(5,2,0),
-                    // Linha 4
-                    grid(2,3,0), grid(3,3,0), grid(4,3,0),
-                    // Linha 5 (base)
-                    grid(3,4,0),
-                    // Camada 1 - Centro
-                    grid(2.5,1.5,1), grid(3.5,1.5,1),
-                    grid(2.5,2.5,1), grid(3.5,2.5,1),
-                    // Camada 2
-                    grid(3,2,2), grid(3,1,2), grid(3,3,2),
-                    // Topo
-                    grid(3,2,3)
-                ],
-                typesCount: 7
-            },
-            6: { // Nível 6: Grade 5x5 Completa
-                layout: [
-                    grid(1,1,0), grid(2,1,0), grid(3,1,0), grid(4,1,0), grid(5,1,0),
-                    grid(1,2,0), grid(2,2,0), grid(3,2,0), grid(4,2,0), grid(5,2,0),
-                    grid(1,3,0), grid(2,3,0), grid(3,3,0), grid(4,3,0), grid(5,3,0),
-                    grid(1,4,0), grid(2,4,0), grid(3,4,0), grid(4,4,0), grid(5,4,0),
-                    grid(1,5,0), grid(2,5,0), grid(3,5,0), grid(4,5,0), grid(5,5,0),
-                    // Camada 1 - 3x3 centro
-                    grid(2,2,1), grid(3,2,1), grid(4,2,1),
-                    grid(2,3,1), grid(3,3,1), grid(4,3,1),
-                    grid(2,4,1), grid(3,4,1), grid(4,4,1),
-                    // Camada 2 - Cruz
-                    grid(3,2,2), grid(3,3,2), grid(3,4,2),
-                    grid(2,3,2), grid(4,3,2),
-                    // Topo
-                    grid(3,3,3)
-                ],
-                typesCount: 8
-            },
-            7: { // Nível 7: Escada Dupla
-                layout: [
-                    // Escada esquerda
-                    grid(0,4,0), grid(1,4,0),
-                    grid(0,3,0), grid(1,3,0), grid(2,3,0),
-                    grid(0,2,0), grid(1,2,0), grid(2,2,0), grid(3,2,0),
-                    grid(0,1,0), grid(1,1,0), grid(2,1,0), grid(3,1,0), grid(4,1,0),
-                    // Escada direita (espelhada)
-                    grid(4,4,0), grid(5,4,0),
-                    grid(3,3,0), grid(4,3,0), grid(5,3,0),
-                    grid(2,2,0), grid(3,2,0), grid(4,2,0), grid(5,2,0),
-                    // Camada 1 - Centro
-                    grid(2,2,1), grid(3,2,1),
-                    grid(2,3,1), grid(3,3,1),
-                    // Topo
-                    grid(2.5,2.5,2)
-                ],
-                typesCount: 8
-            },
-            8: { // Nível 8: Castelo
-                layout: [
-                    // Base
-                    grid(1,4,0), grid(2,4,0), grid(3,4,0), grid(4,4,0), grid(5,4,0),
-                    grid(1,3,0), grid(2,3,0), grid(3,3,0), grid(4,3,0), grid(5,3,0),
-                    // Torres laterais - camada 1
-                    grid(1,2,1), grid(1,1,1), grid(1,0,1),
-                    grid(5,2,1), grid(5,1,1), grid(5,0,1),
-                    // Centro - camada 1
-                    grid(2,2,1), grid(3,2,1), grid(4,2,1),
-                    grid(2,1,1), grid(3,1,1), grid(4,1,1),
-                    // Camada 2 - Torres
-                    grid(1,1,2), grid(5,1,2),
-                    // Camada 2 - Centro
-                    grid(2.5,1.5,2), grid(3.5,1.5,2),
-                    // Topo
-                    grid(3,1,3)
-                ],
-                typesCount: 9
+        // --- GERADOR DE NÍVEIS DINÂMICO ---
+        function generateLevel(levelNum) {
+            // Progressão de dificuldade
+            const difficulty = Math.min(Math.floor((levelNum - 1) / 10), 9); // 0-9
+            
+            // Parâmetros que aumentam com a dificuldade
+            const baseSize = 3 + difficulty; // 3x3 até 12x12
+            const layers = 1 + Math.floor(difficulty / 2); // 1 até 5 camadas
+            const typesCount = 3 + Math.min(difficulty * 2, 20); // 3 até 23 tipos diferentes
+            
+            let layout = [];
+            
+            // Gera base (grade completa ou padrão)
+            const pattern = levelNum % 5;
+            
+            if (pattern === 0) { // Grade completa
+                for (let y = 0; y < baseSize; y++) {
+                    for (let x = 0; x < baseSize; x++) {
+                        layout.push(grid(x, y, 0));
+                    }
+                }
+            } else if (pattern === 1) { // Cruz
+                const center = Math.floor(baseSize / 2);
+                for (let i = 0; i < baseSize; i++) {
+                    layout.push(grid(i, center, 0)); // Horizontal
+                    layout.push(grid(center, i, 0)); // Vertical
+                }
+            } else if (pattern === 2) { // Diamante
+                const center = Math.floor(baseSize / 2);
+                for (let y = 0; y < baseSize; y++) {
+                    for (let x = 0; x < baseSize; x++) {
+                        const dist = Math.abs(x - center) + Math.abs(y - center);
+                        if (dist <= center) {
+                            layout.push(grid(x, y, 0));
+                        }
+                    }
+                }
+            } else if (pattern === 3) { // Círculo
+                const center = baseSize / 2;
+                const radius = center - 0.5;
+                for (let y = 0; y < baseSize; y++) {
+                    for (let x = 0; x < baseSize; x++) {
+                        const dist = Math.sqrt(Math.pow(x - center + 0.5, 2) + Math.pow(y - center + 0.5, 2));
+                        if (dist <= radius) {
+                            layout.push(grid(x, y, 0));
+                        }
+                    }
+                }
+            } else { // Xadrez ou aleatório
+                for (let y = 0; y < baseSize; y++) {
+                    for (let x = 0; x < baseSize; x++) {
+                        if ((x + y) % 2 === 0 || difficulty > 5) {
+                            layout.push(grid(x, y, 0));
+                        }
+                    }
+                }
             }
-        };
+            
+            // Adiciona camadas superiores (pirâmide)
+            for (let layer = 1; layer < layers; layer++) {
+                const layerSize = Math.max(2, baseSize - layer * 2);
+                const offset = layer;
+                
+                for (let y = 0; y < layerSize; y++) {
+                    for (let x = 0; x < layerSize; x++) {
+                        if (Math.random() > 0.3 || layer === layers - 1) { // Menos denso em camadas altas
+                            layout.push(grid(x + offset, y + offset, layer));
+                        }
+                    }
+                }
+            }
+            
+            return { layout, typesCount };
+        }
+
+        const LEVELS = {};
+        // Gera 100 níveis dinamicamente
+        for (let i = 1; i <= 100; i++) {
+            LEVELS[i] = generateLevel(i);
+        }
 
         // --- LÓGICA DE INICIALIZAÇÃO ---
 
