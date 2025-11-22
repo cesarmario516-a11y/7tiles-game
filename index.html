@@ -2513,20 +2513,26 @@
                 return;
             }
             
-            // Usa a skill
-            skillUses[skillType]--;
-            updateSkillCounter(skillType);
+            // Executa a skill e só consome se for bem-sucedida
+            let success = false;
             
             switch(skillType) {
                 case 'undo':
-                    undoLastMove();
+                    success = undoLastMove();
                     break;
                 case 'shuffle':
                     shuffleBoard();
+                    success = true;
                     break;
                 case 'hint':
-                    showHint();
+                    success = showHint();
                     break;
+            }
+            
+            // Só consome o uso se a skill foi executada com sucesso
+            if (success) {
+                skillUses[skillType]--;
+                updateSkillCounter(skillType);
             }
         }
         
@@ -2663,7 +2669,7 @@
         function undoLastMove() {
             if (!lastMove || tilesInTray.length === 0) {
                 alert('Nenhuma jogada para desfazer!');
-                return;
+                return false; // Retorna false para não consumir o uso
             }
             
             // Remove última peça da bandeja
@@ -2687,6 +2693,8 @@
             checkBlockedTiles();
             updateTrayUI();
             lastMove = null;
+            
+            return true; // Retorna true para consumir o uso
         }
 
         function shuffleBoard() {
@@ -2700,20 +2708,72 @@
         }
         
         function showHint() {
-            // Encontra primeira peça não bloqueada
-            const availableTile = tilesOnBoard.find(t => !t.blocked);
+            // Encontra a melhor jogada (peça que tem par na bandeja ou que formaria trio)
+            let bestTile = null;
             
-            if (availableTile && availableTile.el) {
-                // Destaca a peça
-                availableTile.el.style.border = '3px solid #f39c12';
-                availableTile.el.style.boxShadow = '0 0 20px #f39c12';
+            // Primeiro, procura peça que formaria trio na bandeja
+            const trayTypes = tilesInTray.map(t => t.type);
+            for (let tile of tilesOnBoard) {
+                if (tile.blocked) continue;
                 
-                // Remove destaque após 2 segundos
-                setTimeout(() => {
-                    availableTile.el.style.border = '1px solid #eee';
-                    availableTile.el.style.boxShadow = 'inset 0 -4px 0 #dcdcdc, 0 4px 0 #bbb, 0 6px 6px rgba(0,0,0,0.3)';
-                }, 2000);
+                const typeCount = trayTypes.filter(t => t === tile.type).length;
+                if (typeCount === 2) {
+                    // Essa peça completaria um trio!
+                    bestTile = tile;
+                    break;
+                }
             }
+            
+            // Se não encontrou trio, procura peça que tem pelo menos 1 par na bandeja
+            if (!bestTile) {
+                for (let tile of tilesOnBoard) {
+                    if (tile.blocked) continue;
+                    
+                    const typeCount = trayTypes.filter(t => t === tile.type).length;
+                    if (typeCount >= 1) {
+                        bestTile = tile;
+                        break;
+                    }
+                }
+            }
+            
+            // Se ainda não encontrou, pega qualquer peça disponível
+            if (!bestTile) {
+                bestTile = tilesOnBoard.find(t => !t.blocked);
+            }
+            
+            if (!bestTile || !bestTile.el) {
+                alert('Nenhuma dica disponível!');
+                return false;
+            }
+            
+            // Adiciona animação de balanço e destaque
+            bestTile.el.style.border = '3px solid #f39c12';
+            bestTile.el.style.boxShadow = '0 0 20px #f39c12';
+            
+            // Animação de balanço (shake)
+            let shakeCount = 0;
+            const shakeInterval = setInterval(() => {
+                const angle = shakeCount % 2 === 0 ? 10 : -10;
+                bestTile.el.style.transform = `rotate(${angle}deg) scale(1.1)`;
+                shakeCount++;
+                
+                if (shakeCount >= 6) {
+                    clearInterval(shakeInterval);
+                    bestTile.el.style.transform = 'rotate(0deg) scale(1)';
+                }
+            }, 100);
+            
+            // Remove destaque após 3 segundos
+            setTimeout(() => {
+                if (bestTile.el) {
+                    bestTile.el.style.border = '1px solid #eee';
+                    bestTile.el.style.boxShadow = 'inset 0 -4px 0 #dcdcdc, 0 4px 0 #bbb, 0 6px 6px rgba(0,0,0,0.3)';
+                    bestTile.el.style.transform = 'rotate(0deg) scale(1)';
+                }
+            }, 3000);
+            
+            return true;
         }
 
         // --- MODAIS ---
