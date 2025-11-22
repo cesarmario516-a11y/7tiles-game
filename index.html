@@ -144,7 +144,7 @@
             cursor: pointer;
             transition: all 0.1s ease-out;
             z-index: 1;
-            border: 1px solid #eee;
+            border: 2px solid #ddd;
         }
 
         .tile.blocked {
@@ -2373,11 +2373,29 @@
             const el = document.createElement('div');
             el.classList.add('tile');
             el.innerText = type;
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
-            // Ajusta brilho baseado na camada para dar profundidade
-            el.style.zIndex = 10 + z; 
-            if (z === 0) el.style.backgroundColor = "#eee"; 
+            
+            // Offset visual para mostrar camadas (cada camada desloca -3px em x e y)
+            const visualOffset = z * -3;
+            el.style.left = (x + visualOffset) + 'px';
+            el.style.top = (y + visualOffset) + 'px';
+            
+            // Z-index e sombra baseados na camada
+            el.style.zIndex = 10 + z;
+            
+            // Cor e sombra progressivas por camada
+            if (z === 0) {
+                el.style.backgroundColor = "#e8e8e8"; // Base mais escura
+                el.style.boxShadow = "inset 0 -4px 0 #d0d0d0, 0 2px 0 #aaa, 0 3px 4px rgba(0,0,0,0.2)";
+            } else if (z <= 3) {
+                el.style.backgroundColor = "#f0f0f0";
+                el.style.boxShadow = `inset 0 -4px 0 #dcdcdc, 0 ${4 + z}px 0 #bbb, 0 ${6 + z * 2}px ${6 + z * 2}px rgba(0,0,0,${0.3 + z * 0.05})`;
+            } else if (z <= 6) {
+                el.style.backgroundColor = "#f8f8f8";
+                el.style.boxShadow = `inset 0 -4px 0 #e0e0e0, 0 ${8 + z}px 0 #bbb, 0 ${12 + z * 2}px ${12 + z * 2}px rgba(0,0,0,${0.4 + z * 0.03})`;
+            } else {
+                el.style.backgroundColor = "#fdfdfd"; // Topo mais claro
+                el.style.boxShadow = `inset 0 -5px 0 #dcdcdc, 0 ${12 + z}px 0 #bbb, 0 ${18 + z * 2}px ${18 + z * 2}px rgba(0,0,0,${0.5 + z * 0.02})`;
+            }
 
             el.onclick = () => handleTileClick(tile);
             
