@@ -2160,12 +2160,17 @@
 
         // --- GERADOR DE NÍVEIS DINÂMICO ---
         function generateLevel(levelNum) {
-            // Progressão de dificuldade
+            // Progressão de dificuldade controlada
             const difficulty = Math.min(Math.floor((levelNum - 1) / 10), 9); // 0-9
             
-            // Parâmetros que aumentam com a dificuldade
-            const baseSize = 3 + difficulty; // 3x3 até 12x12
-            const layers = 1 + Math.floor(difficulty / 2); // 1 até 5 camadas
+            // LIMITES PARA CABER NA TELA DE CELULAR (700x800px área útil)
+            // Tile = 60x66px, espaçamento = 55x58px
+            const maxCols = 6; // Máximo 6 colunas (6 * 55 = 330px)
+            const maxRows = 6; // Máximo 6 linhas (6 * 58 = 348px)
+            
+            // Parâmetros que aumentam com a dificuldade (MAS CONTROLADOS)
+            const baseSize = Math.min(3 + Math.floor(difficulty * 0.5), maxCols); // 3 até 6
+            const layers = Math.min(1 + Math.floor(difficulty / 3), 4); // 1 até 4 camadas
             const typesCount = 3 + Math.min(difficulty * 2, 20); // 3 até 23 tipos diferentes
             
             let layout = [];
@@ -2183,7 +2188,9 @@
                 const center = Math.floor(baseSize / 2);
                 for (let i = 0; i < baseSize; i++) {
                     layout.push(grid(i, center, 0)); // Horizontal
-                    layout.push(grid(center, i, 0)); // Vertical
+                    if (i !== center) { // Evita duplicar centro
+                        layout.push(grid(center, i, 0)); // Vertical
+                    }
                 }
             } else if (pattern === 2) { // Diamante
                 const center = Math.floor(baseSize / 2);
@@ -2216,14 +2223,15 @@
                 }
             }
             
-            // Adiciona camadas superiores (pirâmide)
+            // Adiciona camadas superiores (pirâmide) - CONTROLADO
             for (let layer = 1; layer < layers; layer++) {
-                const layerSize = Math.max(2, baseSize - layer * 2);
-                const offset = layer;
+                const layerSize = Math.max(2, baseSize - layer);
+                const offset = Math.floor(layer * 0.5); // Offset menor para não sair da tela
                 
-                for (let y = 0; y < layerSize; y++) {
-                    for (let x = 0; x < layerSize; x++) {
-                        if (Math.random() > 0.3 || layer === layers - 1) { // Menos denso em camadas altas
+                for (let y = 0; y < layerSize && (y + offset) < maxRows; y++) {
+                    for (let x = 0; x < layerSize && (x + offset) < maxCols; x++) {
+                        // Adiciona menos peças em camadas altas para aumentar dificuldade
+                        if (Math.random() > 0.2 || layer === layers - 1) {
                             layout.push(grid(x + offset, y + offset, layer));
                         }
                     }
