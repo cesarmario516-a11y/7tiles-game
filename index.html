@@ -1080,6 +1080,11 @@
         <source src="victory-sound.wav" type="audio/wav">
     </audio>
 
+    <!-- SOM DE FRUTA SELECIONADA -->
+    <audio id="fruit-select-sound">
+        <source src="fruit-select.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- HOME SCREEN -->
     <div id="home-screen">
         <!-- Moedas no topo da Home -->
@@ -1584,6 +1589,7 @@
         const bgMusic = document.getElementById('background-music');
         const clickSound = document.getElementById('click-sound');
         const victorySound = document.getElementById('victory-sound');
+        const fruitSelectSound = document.getElementById('fruit-select-sound');
         let isMusicEnabled = true;
         let isSoundEnabled = true;
 
@@ -1610,6 +1616,18 @@
                 victorySound.currentTime = 0;
                 victorySound.volume = 0.7; // Volume a 70%
                 victorySound.play().catch(err => console.log('Erro ao tocar som de vitória:', err));
+            }
+        }
+
+        function playFruitSelectSound() {
+            if (isSoundEnabled) {
+                fruitSelectSound.currentTime = 0;
+                fruitSelectSound.volume = 0.6; // Volume a 60%
+                fruitSelectSound.play().catch(err => console.log('Erro ao tocar som de fruta:', err));
+            }
+            // Vibração no dispositivo (se disponível)
+            if (navigator.vibrate) {
+                navigator.vibrate(50); // Vibra por 50ms
             }
         }
 
@@ -2175,6 +2193,9 @@
             
             // Game Over check prévio
             if (tilesInTray.length >= TRAY_CAPACITY) return;
+
+            // Toca som e vibra ao selecionar fruta
+            playFruitSelectSound();
 
             // Salva para undo
             lastMove = { tile: tile, boardState: [...tilesOnBoard], trayState: [...tilesInTray] };
