@@ -2160,18 +2160,48 @@
 
         // --- GERADOR DE NÍVEIS DINÂMICO ---
         function generateLevel(levelNum) {
-            // Progressão de dificuldade controlada
-            const difficulty = Math.min(Math.floor((levelNum - 1) / 10), 9); // 0-9
+            // Progressão de dificuldade mais agressiva
+            const difficulty = Math.min(Math.floor((levelNum - 1) / 5), 19); // 0-19 (grupos de 5 níveis)
             
             // LIMITES PARA CABER NA TELA DE CELULAR (700x800px área útil)
             // Tile = 60x66px, espaçamento = 55x58px
             const maxCols = 6; // Máximo 6 colunas (6 * 55 = 330px)
             const maxRows = 6; // Máximo 6 linhas (6 * 58 = 348px)
             
-            // Parâmetros que aumentam com a dificuldade (MAS CONTROLADOS)
-            const baseSize = Math.min(3 + Math.floor(difficulty * 0.5), maxCols); // 3 até 6
-            const layers = Math.min(1 + Math.floor(difficulty / 3), 4); // 1 até 4 camadas
-            const typesCount = 3 + Math.min(difficulty * 2, 20); // 3 até 23 tipos diferentes
+            // PROGRESSÃO MAIS AGRESSIVA
+            // Níveis 1-2: Muito fácil (tutorial)
+            // Níveis 3-5: Fácil
+            // Níveis 6-10: Médio
+            // Níveis 11+: Aumenta gradualmente
+            
+            let baseSize, layers, typesCount;
+            
+            if (levelNum === 1) {
+                // Nível 1: SUPER fácil - 9 peças (3x3, 1 camada, 3 tipos)
+                baseSize = 3;
+                layers = 1;
+                typesCount = 3;
+            } else if (levelNum === 2) {
+                // Nível 2: Muito fácil - 12 peças (3x3 + centro, 1 camada, 3 tipos)
+                baseSize = 3;
+                layers = 1;
+                typesCount = 3;
+            } else if (levelNum <= 5) {
+                // Níveis 3-5: Fácil - começa a adicionar camadas
+                baseSize = 3;
+                layers = 2;
+                typesCount = 4;
+            } else if (levelNum <= 10) {
+                // Níveis 6-10: Médio - mais tipos
+                baseSize = 4;
+                layers = 2;
+                typesCount = 4 + Math.floor((levelNum - 6) * 0.5);
+            } else {
+                // Níveis 11-100: Progressão gradual
+                baseSize = Math.min(3 + Math.floor(difficulty * 0.3), maxCols); // 3 até 6
+                layers = Math.min(1 + Math.floor(difficulty * 0.4), 6); // 1 até 6 camadas
+                typesCount = 3 + Math.min(Math.floor(difficulty * 1.2), 22); // 3 até 25 tipos
+            }
             
             let layout = [];
             
