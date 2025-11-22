@@ -2428,45 +2428,61 @@
         function checkBlockedTiles() {
             tilesOnBoard.forEach(lower => {
                 lower.blocked = false;
-                let blockCount = 0; // Conta quantas peças estão cobrindo
                 
-                // Procura se tem alguém em cima
+                // Procura se tem QUALQUER peça em cima (mesmo parcial)
                 for (let upper of tilesOnBoard) {
                     if (upper === lower) continue;
                     
-                    // Se está numa camada superior
+                    // Se está numa camada superior (mesmo que seja 1 camada acima)
                     if (upper.z > lower.z) {
-                        // Verifica sobreposição real (considera offset visual)
+                        // Verifica QUALQUER sobreposição (considera offset visual)
                         const upperVisualX = upper.x + (upper.z * -3);
                         const upperVisualY = upper.y + (upper.z * -3);
                         const lowerVisualX = lower.x + (lower.z * -3);
                         const lowerVisualY = lower.y + (lower.z * -3);
                         
-                        // Distância entre centros
-                        const distX = Math.abs(upperVisualX - lowerVisualX);
-                        const distY = Math.abs(upperVisualY - lowerVisualY);
+                        // Dimensões da tile
+                        const tileWidth = 60;
+                        const tileHeight = 66;
                         
-                        // Bloqueia se houver sobreposição significativa (50% da peça)
-                        if (distX < 40 && distY < 40) {
-                            blockCount++;
+                        // Calcula limites de cada tile
+                        const upperLeft = upperVisualX;
+                        const upperRight = upperVisualX + tileWidth;
+                        const upperTop = upperVisualY;
+                        const upperBottom = upperVisualY + tileHeight;
+                        
+                        const lowerLeft = lowerVisualX;
+                        const lowerRight = lowerVisualX + tileWidth;
+                        const lowerTop = lowerVisualY;
+                        const lowerBottom = lowerVisualY + tileHeight;
+                        
+                        // Verifica se há QUALQUER sobreposição (mesmo 1px)
+                        const hasOverlap = !(
+                            upperRight <= lowerLeft ||   // upper está totalmente à esquerda
+                            upperLeft >= lowerRight ||   // upper está totalmente à direita
+                            upperBottom <= lowerTop ||   // upper está totalmente acima
+                            upperTop >= lowerBottom      // upper está totalmente abaixo
+                        );
+                        
+                        // Se houver QUALQUER sobreposição, bloqueia
+                        if (hasOverlap) {
+                            lower.blocked = true;
+                            break; // Já encontrou bloqueio, não precisa continuar
                         }
                     }
                 }
                 
-                // Bloqueia se tiver pelo menos 1 peça em cima
-                if (blockCount > 0) {
-                    lower.blocked = true;
-                }
-                
-                // Update Visual
+                // Update Visual - Peças bloqueadas ficam escuras e com cursor bloqueado
                 if (lower.blocked) {
                     lower.el.classList.add('blocked');
-                    lower.el.style.opacity = '0.7'; // Escurece peças bloqueadas
+                    lower.el.style.opacity = '0.6'; // Bem escuras
                     lower.el.style.cursor = 'not-allowed';
+                    lower.el.style.filter = 'brightness(0.7)'; // Escurece mais ainda
                 } else {
                     lower.el.classList.remove('blocked');
                     lower.el.style.opacity = '1';
                     lower.el.style.cursor = 'pointer';
+                    lower.el.style.filter = 'brightness(1)';
                 }
             });
         }
