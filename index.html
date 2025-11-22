@@ -2426,6 +2426,8 @@
         // --- LÓGICA DE JOGO ---
 
         function checkBlockedTiles() {
+            // IMPORTANTE: Verifica peça por peça individualmente
+            // Cada peça só é bloqueada se tiver OUTRA peça em cima dela
             tilesOnBoard.forEach(lower => {
                 lower.blocked = false;
                 
