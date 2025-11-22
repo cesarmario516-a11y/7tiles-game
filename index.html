@@ -1075,6 +1075,11 @@
         <source src="click-sound.wav" type="audio/wav">
     </audio>
 
+    <!-- SOM DE VITÓRIA -->
+    <audio id="victory-sound">
+        <source src="victory-sound.wav" type="audio/wav">
+    </audio>
+
     <!-- HOME SCREEN -->
     <div id="home-screen">
         <!-- Moedas no topo da Home -->
@@ -1578,6 +1583,7 @@
         // --- SISTEMA DE MÚSICA ---
         const bgMusic = document.getElementById('background-music');
         const clickSound = document.getElementById('click-sound');
+        const victorySound = document.getElementById('victory-sound');
         let isMusicEnabled = true;
         let isSoundEnabled = true;
 
@@ -1596,6 +1602,14 @@
                 clickSound.currentTime = 0; // Reinicia para tocar novamente
                 clickSound.volume = 0.5; // Volume a 50%
                 clickSound.play().catch(err => console.log('Erro ao tocar som:', err));
+            }
+        }
+
+        function playVictorySound() {
+            if (isSoundEnabled) {
+                victorySound.currentTime = 0;
+                victorySound.volume = 0.7; // Volume a 70%
+                victorySound.play().catch(err => console.log('Erro ao tocar som de vitória:', err));
             }
         }
 
@@ -2512,6 +2526,9 @@
         // --- MODAIS ---
 
         function showWinModal() {
+            // Toca som de vitória
+            playVictorySound();
+            
             // Calcula recompensa de moedas
             const coinReward = currentLevel * 50; // 50 moedas por nível
             
