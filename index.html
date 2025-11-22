@@ -2982,19 +2982,21 @@
             // Mostra modal com contador
             countdownSeconds = 5;
             const trayFullText = currentLanguage === 'pt' ? 'BANDEJA CHEIA!' : currentLanguage === 'en' ? 'TRAY FULL!' : '¡BANDEJA LLENA!';
-            const watchAdText = currentLanguage === 'pt' ? 'Assista um anúncio para continuar' : currentLanguage === 'en' ? 'Watch an ad to continue' : 'Mira un anuncio para continuar';
+            const watchAdText = currentLanguage === 'pt' ? 'Assista um anúncio e CONTINUE jogando!' : currentLanguage === 'en' ? 'Watch an ad and KEEP PLAYING!' : '¡Mira un anuncio y SIGUE JUGANDO!';
+            const bonusText = currentLanguage === 'pt' ? 'Ganhe +2 jogadas e embaralhamento!' : currentLanguage === 'en' ? 'Get +2 moves and shuffle!' : '¡Obtén +2 movimientos y barajar!';
             const waitText = currentLanguage === 'pt' ? 'Ou aguarde' : currentLanguage === 'en' ? 'Or wait' : 'O espera';
             const restartText = currentLanguage === 'pt' ? 's para reiniciar' : currentLanguage === 'en' ? 's to restart' : 's para reiniciar';
             
             modalContent.innerHTML = `
                 <h1>${trayFullText}</h1>
-                <p>${watchAdText}</p>
+                <p style="font-size: 1.1rem; font-weight: bold; color: #27ae60; margin: 10px 0;">${watchAdText}</p>
+                <p style="font-size: 0.95rem; color: #555; margin: 5px 0;">${bonusText}</p>
                 <div class="countdown-circle">
                     <div class="countdown-ring"></div>
                     <div class="countdown-number" id="countdown-num">5</div>
                 </div>
                 <button class="btn-continue" onclick="watchAdAndContinue()">
-                    ▶ ${t('continueGame')} (${currentLanguage === 'pt' ? 'Anúncio' : currentLanguage === 'en' ? 'Ad' : 'Anuncio'})
+                    ▶ ${currentLanguage === 'pt' ? 'CONTINUAR' : currentLanguage === 'en' ? 'CONTINUE' : 'CONTINUAR'} (${currentLanguage === 'pt' ? 'Anúncio' : currentLanguage === 'en' ? 'Ad' : 'Anuncio'})
                 </button>
                 <p style="font-size: 0.9rem; color: #999; margin-top: 10px;">${waitText} ${countdownSeconds}${restartText}</p>
             `;
@@ -3057,47 +3059,49 @@
             tilesOnBoard = gameOverState.boardTiles;
             tilesInTray = gameOverState.trayTiles;
             
-            // Remove peças da bandeja de forma inteligente para manter a regra de divisibilidade por 3
+            // 🎁 BÔNUS POR ASSISTIR PROPAGANDA:
+            // 1. Remove 1-2 peças da bandeja para dar espaço
+            // 2. Dá 1-2 usos extras de Undo
+            // 3. Embaralha o tabuleiro para criar novas oportunidades
+            
+            // Remove 1-2 peças aleatórias da bandeja (respeitando regra de trio)
             if (tilesInTray.length > 0) {
-                // Conta tipos de peças na bandeja
+                const piecesToRemove = Math.min(2, tilesInTray.length);
+                
+                // Conta tipos na bandeja
                 const trayTypeCounts = {};
                 tilesInTray.forEach(t => {
                     trayTypeCounts[t.type] = (trayTypeCounts[t.type] || 0) + 1;
                 });
                 
-                // Estratégia 1: Encontrar tipos com contagem não-divisível por 3 e remover para corrigir
-                const typesToFix = [];
+                // Remove peças mantendo a regra de divisibilidade por 3
+                let removed = 0;
                 for (let type in trayTypeCounts) {
+                    if (removed >= piecesToRemove) break;
+                    
                     const count = trayTypeCounts[type];
                     const remainder = count % 3;
+                    
+                    // Prioriza remover tipos que atrapalham (não-divisíveis por 3)
                     if (remainder !== 0) {
-                        typesToFix.push({ type, removeCount: remainder });
-                    }
-                }
-                
-                // Se há tipos para corrigir, remove o necessário
-                if (typesToFix.length > 0) {
-                    typesToFix.forEach(fix => {
-                        for (let i = 0; i < fix.removeCount; i++) {
-                            const indexToRemove = tilesInTray.findIndex(t => t.type === fix.type);
+                        for (let i = 0; i < Math.min(remainder, piecesToRemove - removed); i++) {
+                            const indexToRemove = tilesInTray.findIndex(t => t.type === type);
                             if (indexToRemove !== -1) {
                                 tilesInTray.splice(indexToRemove, 1);
+                                removed++;
                             }
-                        }
-                    });
-                } else {
-                    // Estratégia 2: Se todos já são divisíveis por 3, remove um trio completo
-                    // (pega o primeiro tipo e remove 3 dele)
-                    const firstType = tilesInTray[0].type;
-                    for (let i = 0; i < 3; i++) {
-                        const indexToRemove = tilesInTray.findIndex(t => t.type === firstType);
-                        if (indexToRemove !== -1) {
-                            tilesInTray.splice(indexToRemove, 1);
                         }
                     }
                 }
                 
-                // Validação final: Garante que todas as peças (tabuleiro + bandeja) respeitam a regra
+                // Se não removeu o suficiente, remove qualquer peça
+                while (removed < piecesToRemove && tilesInTray.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * tilesInTray.length);
+                    tilesInTray.splice(randomIndex, 1);
+                    removed++;
+                }
+                
+                // Validação: garante regra de trio
                 const allTiles = [...tilesOnBoard, ...tilesInTray];
                 if (!validateTrioRule(allTiles)) {
                     console.warn('Aviso: Estado restaurado não respeita regra de trio. Reiniciando nível.');
@@ -3106,7 +3110,21 @@
                 }
             }
             
-            // Recria o tabuleiro
+            // 🎁 Bônus 1: +2 usos de Undo (jogadas extras)
+            skillUses.undo += 2;
+            updateSkillCounter('undo');
+            
+            // 🎁 Bônus 2: Embaralha o tabuleiro para criar novas oportunidades
+            // Embaralha apenas as posições (mantém as peças, muda onde estão)
+            const positions = tilesOnBoard.map(t => ({ x: t.x, y: t.y, z: t.z }));
+            positions.sort(() => 0.5 - Math.random());
+            tilesOnBoard.forEach((tile, i) => {
+                tile.x = positions[i].x;
+                tile.y = positions[i].y;
+                tile.z = positions[i].z;
+            });
+            
+            // Recria o tabuleiro com posições embaralhadas
             boardEl.innerHTML = '';
             tilesOnBoard.forEach(tile => {
                 const el = document.createElement('div');
@@ -3115,7 +3133,19 @@
                 el.style.left = tile.x + 'px';
                 el.style.top = tile.y + 'px';
                 el.style.zIndex = 10 + tile.z;
-                if (tile.z === 0) el.style.backgroundColor = "#eee";
+                
+                // Aplica offset visual para camadas
+                const visualOffset = tile.z * -3;
+                el.style.transform = `translate(${visualOffset}px, ${visualOffset}px)`;
+                
+                // Cores e sombras progressivas por camada
+                const baseColor = 232 + (tile.z * 3); // 232 base, +3 por camada
+                el.style.backgroundColor = `rgb(${baseColor}, ${baseColor}, ${baseColor})`;
+                
+                const shadowSize = 2 + (tile.z * 2); // 2px base, +2px por camada
+                const shadowBlur = 3 + (tile.z * 3); // 3px base, +3px por camada
+                el.style.boxShadow = `${shadowSize}px ${shadowSize}px ${shadowBlur}px rgba(0,0,0,0.2)`;
+                
                 el.onclick = () => handleTileClick(tile);
                 boardEl.appendChild(el);
                 tile.el = el;
@@ -3123,6 +3153,27 @@
             
             checkBlockedTiles();
             updateTrayUI();
+            
+            // Mostra feedback visual do bônus
+            modalContent.innerHTML = `
+                <h1 style="color: #27ae60;">🎁 CONTINUE JOGANDO!</h1>
+                <p style="font-size: 1.1rem; margin: 20px 0;">Você ganhou:</p>
+                <div style="background: #ecf0f1; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                    <p style="margin: 8px 0;">✨ 1-2 peças removidas da bandeja</p>
+                    <p style="margin: 8px 0;">↩️ +2 jogadas de Desfazer</p>
+                    <p style="margin: 8px 0;">🔀 Tabuleiro embaralhado</p>
+                </div>
+                <button class="btn-primary" onclick="closeBonusModal()">CONTINUAR</button>
+            `;
+            
+            // Auto-fecha após 2 segundos
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                gameOverState = null;
+            }, 2000);
+        }
+        
+        function closeBonusModal() {
             overlay.style.display = 'none';
             gameOverState = null;
         }
