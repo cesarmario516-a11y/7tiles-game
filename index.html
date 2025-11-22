@@ -1522,6 +1522,9 @@
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('nav-buttons').style.display = 'flex';
             startLevel(currentLevel);
+            
+            // Registra acesso e agenda notificações
+            scheduleNotification();
         }
 
         function goHome() {
@@ -1537,6 +1540,9 @@
             tilesOnBoard = [];
             tilesInTray = [];
             updateTrayUI();
+            
+            // Registra acesso
+            scheduleNotification();
         }
 
         function openConfig() {
@@ -1576,13 +1582,17 @@
         }
 
         function toggleNotification() {
+            playClickSound();
             settings.notification = !settings.notification;
             const toggle = document.getElementById('notification-toggle');
             if (settings.notification) {
                 toggle.classList.remove('off');
+                requestNotificationPermission();
             } else {
                 toggle.classList.add('off');
+                cancelAllNotifications();
             }
+            saveSettings();
         }
 
         // --- SISTEMA DE MÚSICA ---
@@ -1644,11 +1654,131 @@
             isSoundEnabled = enabled;
         }
 
+        // --- SISTEMA DE NOTIFICAÇÕES ---
+        let notificationPermissionGranted = false;
+        let notificationTimer = null;
+        const INACTIVITY_TIME = 24 * 60 * 60 * 1000; // 24 horas
+
+        function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                console.log('Notificações não suportadas');
+                return;
+            }
+
+            if (Notification.permission === 'granted') {
+                notificationPermissionGranted = true;
+                scheduleNotification();
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        notificationPermissionGranted = true;
+                        scheduleNotification();
+                    }
+                });
+            }
+        }
+
+        function scheduleNotification() {
+            if (!settings.notification || !notificationPermissionGranted) return;
+
+            if (notificationTimer) clearTimeout(notificationTimer);
+
+            notificationTimer = setTimeout(() => {
+                sendNotification();
+            }, INACTIVITY_TIME);
+
+            localStorage.setItem('lastAccess', Date.now());
+        }
+
+        function sendNotification() {
+            if (!settings.notification || !notificationPermissionGranted) return;
+
+            const messages = {
+                pt: {
+                    title: '🎮 7 Tiles - Jogo de Combinar',
+                    body: 'Que saudade! Volte para completar mais níveis e ganhar moedas! 🏆'
+                },
+                en: {
+                    title: '🎮 7 Tiles - Match Game',
+                    body: 'We miss you! Come back to complete more levels and earn coins! 🏆'
+                },
+                es: {
+                    title: '🎮 7 Tiles - Juego de Combinar',
+                    body: '¡Te extrañamos! ¡Vuelve para completar más niveles y ganar monedas! 🏆'
+                }
+            };
+
+            const msg = messages[currentLanguage] || messages.pt;
+
+            new Notification(msg.title, {
+                body: msg.body,
+                icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="75" font-size="80">🍎</text></svg>',
+                tag: '7tiles-reminder'
+            });
+
+            scheduleNotification();
+        }
+
+        function cancelAllNotifications() {
+            if (notificationTimer) {
+                clearTimeout(notificationTimer);
+                notificationTimer = null;
+            }
+        }
+
+        function checkInactivityNotification() {
+            if (!settings.notification) return;
+
+            const lastAccess = localStorage.getItem('lastAccess');
+            if (lastAccess) {
+                const timeSinceLastAccess = Date.now() - parseInt(lastAccess);
+                if (timeSinceLastAccess >= INACTIVITY_TIME && notificationPermissionGranted) {
+                    sendNotification();
+                }
+            }
+            scheduleNotification();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('gameSettings', JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('gameSettings');
+            if (saved) {
+                settings = { ...settings, ...JSON.parse(saved) };
+                if (!settings.music) {
+                    document.getElementById('music-toggle').classList.add('off');
+                    toggleMusicState(false);
+                }
+                if (!settings.sound) {
+                    document.getElementById('sound-toggle').classList.add('off');
+                    toggleSoundState(false);
+                }
+                if (!settings.notification) {
+                    document.getElementById('notification-toggle').classList.add('off');
+                }
+            }
+        }
+
         // Inicia música quando usuário clicar em qualquer lugar (primeira interação)
         document.addEventListener('click', function initOnClick() {
             initMusic();
             document.removeEventListener('click', initOnClick);
         }, { once: true });
+
+        // Inicializa configurações e notificações
+        loadSettings();
+        if (settings.notification) {
+            if (Notification.permission === 'granted') {
+                notificationPermissionGranted = true;
+                checkInactivityNotification();
+            } else if (Notification.permission === 'default') {
+                setTimeout(() => {
+                    if (settings.notification) requestNotificationPermission();
+                }, 5000);
+            }
+        }
 
         // --- SISTEMA DE IDIOMAS ---
         let selectedLanguage = 'pt'; // Temporário para seleção no modal
