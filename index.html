@@ -1070,6 +1070,11 @@
         <source src="background-music.mp3" type="audio/wav">
     </audio>
 
+    <!-- SOM DE CLIQUE -->
+    <audio id="click-sound">
+        <source src="click-sound.wav" type="audio/wav">
+    </audio>
+
     <!-- HOME SCREEN -->
     <div id="home-screen">
         <!-- Moedas no topo da Home -->
@@ -1503,12 +1508,14 @@
 
         // --- NAVEGAÇÃO ---
         function startGame() {
+            playClickSound();
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('nav-buttons').style.display = 'flex';
             startLevel(currentLevel);
         }
 
         function goHome() {
+            playClickSound();
             // Salva o progresso
             document.getElementById('home-screen').style.display = 'flex';
             document.getElementById('nav-buttons').style.display = 'none';
@@ -1523,14 +1530,17 @@
         }
 
         function openConfig() {
+            playClickSound();
             document.getElementById('config-overlay').style.display = 'flex';
         }
 
         function closeConfig() {
+            playClickSound();
             document.getElementById('config-overlay').style.display = 'none';
         }
 
         function toggleMusic() {
+            playClickSound();
             settings.music = !settings.music;
             const toggle = document.getElementById('music-toggle');
             if (settings.music) {
@@ -1547,9 +1557,12 @@
             const toggle = document.getElementById('sound-toggle');
             if (settings.sound) {
                 toggle.classList.remove('off');
+                toggleSoundState(true);
             } else {
                 toggle.classList.add('off');
+                toggleSoundState(false);
             }
+            playClickSound();
         }
 
         function toggleNotification() {
@@ -1564,7 +1577,9 @@
 
         // --- SISTEMA DE MÚSICA ---
         const bgMusic = document.getElementById('background-music');
+        const clickSound = document.getElementById('click-sound');
         let isMusicEnabled = true;
+        let isSoundEnabled = true;
 
         function initMusic() {
             // Tenta tocar a música quando o usuário interagir pela primeira vez
@@ -1573,6 +1588,14 @@
                 bgMusic.play().catch(err => {
                     console.log('Música será reproduzida após interação do usuário');
                 });
+            }
+        }
+
+        function playClickSound() {
+            if (isSoundEnabled) {
+                clickSound.currentTime = 0; // Reinicia para tocar novamente
+                clickSound.volume = 0.5; // Volume a 50%
+                clickSound.play().catch(err => console.log('Erro ao tocar som:', err));
             }
         }
 
@@ -1585,6 +1608,10 @@
             }
         }
 
+        function toggleSoundState(enabled) {
+            isSoundEnabled = enabled;
+        }
+
         // Inicia música quando usuário clicar em qualquer lugar (primeira interação)
         document.addEventListener('click', function initOnClick() {
             initMusic();
@@ -1595,16 +1622,19 @@
         let selectedLanguage = 'pt'; // Temporário para seleção no modal
         
         function openLanguageModal() {
+            playClickSound();
             selectedLanguage = currentLanguage; // Inicia com idioma atual
             updateLanguageModal();
             document.getElementById('language-overlay').style.display = 'flex';
         }
         
         function closeLanguageModal() {
+            playClickSound();
             document.getElementById('language-overlay').style.display = 'none';
         }
         
         function selectLanguage(lang) {
+            playClickSound();
             selectedLanguage = lang;
             updateLanguageModal();
         }
@@ -1702,14 +1732,17 @@
 
         // --- LOJA (SHOP) ---
         function openShop() {
+            playClickSound();
             document.getElementById('shop-overlay').style.display = 'flex';
         }
 
         function closeShop() {
+            playClickSound();
             document.getElementById('shop-overlay').style.display = 'none';
         }
 
         function buyCoins(amount, price) {
+            playClickSound();
             // Simula compra de moedas (integrar com sistema de pagamento real)
             if (confirm(`Comprar ${amount} moedas por R$ ${price.toFixed(2)}?`)) {
                 coins += amount;
@@ -2696,10 +2729,12 @@
         }
 
         function nextLevel() {
+            playClickSound();
             startLevel(currentLevel + 1);
         }
 
         function retryLevel() {
+            playClickSound();
             // Para qualquer contador ativo
             if (countdownTimer) {
                 clearInterval(countdownTimer);
