@@ -3078,12 +3078,12 @@
             // Mostra modal com contador
             countdownSeconds = 5;
             const trayFullText = currentLanguage === 'pt' ? 'BANDEJA CHEIA!' : currentLanguage === 'en' ? 'TRAY FULL!' : '¡BANDEJA LLENA!';
-            const watchAdText = currentLanguage === 'pt' ? 'Assista anúncio e ESCOLHA 1 peça para devolver!' : 
-                               currentLanguage === 'en' ? 'Watch ad and CHOOSE 1 piece to return!' : 
-                               '¡Mira anuncio y ELIGE 1 pieza para devolver!';
-            const bonusText = currentLanguage === 'pt' ? 'Continue jogando com 6 peças + embaralhamento' : 
-                             currentLanguage === 'en' ? 'Keep playing with 6 pieces + shuffle' : 
-                             'Sigue jugando con 6 piezas + barajar';
+            const watchAdText = currentLanguage === 'pt' ? 'Assista anúncio e GANHE uma peça de brinde!' : 
+                               currentLanguage === 'en' ? 'Watch ad and GET a bonus piece!' : 
+                               '¡Mira anuncio y OBTÉN una pieza de regalo!';
+            const bonusText = currentLanguage === 'pt' ? 'Continue jogando com ajuda extra + embaralhamento' : 
+                             currentLanguage === 'en' ? 'Keep playing with extra help + shuffle' : 
+                             'Sigue jugando con ayuda extra + barajar';
             const waitText = currentLanguage === 'pt' ? 'Ou aguarde' : currentLanguage === 'en' ? 'Or wait' : 'O espera';
             const restartText = currentLanguage === 'pt' ? 's para reiniciar' : currentLanguage === 'en' ? 's to restart' : 's para reiniciar';
 
@@ -3096,7 +3096,7 @@
                     <div class="countdown-number" id="countdown-num">5</div>
                 </div>
                 <button class="btn-continue" onclick="watchAdAndContinue()">
-                    ▶ ${currentLanguage === 'pt' ? 'ASSISTIR E ESCOLHER' : currentLanguage === 'en' ? 'WATCH & CHOOSE' : 'VER Y ELEGIR'} 🎯
+                    ▶ ${currentLanguage === 'pt' ? 'GANHAR PEÇA' : currentLanguage === 'en' ? 'GET PIECE' : 'OBTENER PIEZA'} 🎁
                 </button>
                 <p style="font-size: 0.9rem; color: #999; margin-top: 10px;">${waitText} ${countdownSeconds}${restartText}</p>
             `;
@@ -3131,62 +3131,9 @@
 
             // Mostra anúncio intersticial usando o AdManager
             AdManager.showInterstitial(() => {
-                // Callback: executado após o anúncio - mostra seletor de peça
-                showPieceSelector();
+                // Callback: executado após o anúncio - dá peça de brinde
+                restoreGameStateWithBonus();
             });
-        }
-        
-        function showPieceSelector() {
-            if (!gameOverState || gameOverState.trayTiles.length === 0) {
-                restoreGameState();
-                return;
-            }
-            
-            const selectText = currentLanguage === 'pt' ? 'Escolha UMA peça para devolver ao tabuleiro' : 
-                              currentLanguage === 'en' ? 'Choose ONE piece to return to the board' : 
-                              'Elige UNA pieza para devolver al tablero';
-            
-            // Mostra as 7 peças da bandeja para escolher
-            let piecesHTML = '';
-            gameOverState.trayTiles.forEach((tile, index) => {
-                piecesHTML += `
-                    <div class="selectable-piece" onclick="selectPieceToReturn(${index})" 
-                         style="font-size: 3rem; padding: 15px; margin: 8px; background: white; 
-                                border: 3px solid #ddd; border-radius: 12px; cursor: pointer;
-                                transition: all 0.2s; display: inline-block; min-width: 70px;
-                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
-                         onmouseover="this.style.transform='scale(1.1)'; this.style.borderColor='#27ae60';"
-                         onmouseout="this.style.transform='scale(1)'; this.style.borderColor='#ddd';">
-                        ${tile.type}
-                    </div>
-                `;
-            });
-            
-            modalContent.innerHTML = `
-                <h1 style="font-size: 1.6rem; margin-bottom: 15px;">🎯 ${selectText}</h1>
-                <div style="background: #ecf0f1; padding: 15px; border-radius: 12px; margin: 20px 0;">
-                    ${piecesHTML}
-                </div>
-                <p style="font-size: 0.9rem; color: #7f8c8d; margin-top: 10px;">
-                    ${currentLanguage === 'pt' ? 'A peça escolhida voltará ao tabuleiro embaralhado' : 
-                      currentLanguage === 'en' ? 'The chosen piece will return to the shuffled board' :
-                      'La pieza elegida volverá al tablero barajado'}
-                </p>
-            `;
-            overlay.style.display = 'flex';
-        }
-        
-        function selectPieceToReturn(pieceIndex) {
-            if (!gameOverState) return;
-            
-            // Remove a peça escolhida da bandeja
-            const selectedPiece = gameOverState.trayTiles.splice(pieceIndex, 1)[0];
-            
-            // Adiciona de volta ao tabuleiro
-            gameOverState.boardTiles.push(selectedPiece);
-            
-            // Agora restaura o jogo com a peça devolvida
-            restoreGameStateWithReturnedPiece();
         }
 
         // Valida se todos os tipos de peças têm contagem divisível por 3
@@ -3331,12 +3278,55 @@
             gameOverState = null;
         }
         
-        function restoreGameStateWithReturnedPiece() {
+        function restoreGameStateWithBonus() {
             if (!gameOverState) return;
 
-            // Restaura estado salvo (já com a peça devolvida ao tabuleiro)
+            // Restaura estado salvo
             tilesOnBoard = gameOverState.boardTiles;
-            tilesInTray = gameOverState.trayTiles; // Agora tem 6 peças (removeu 1)
+            tilesInTray = gameOverState.trayTiles; // Tem 7 peças
+
+            // 🎁 BÔNUS: Escolhe uma peça da bandeja e adiciona outra igual no tabuleiro
+            // Isso dá uma "ajuda" para formar um trio facilmente!
+            
+            if (tilesInTray.length > 0) {
+                // Conta quantas vezes cada tipo aparece na bandeja
+                const trayTypeCounts = {};
+                tilesInTray.forEach(t => {
+                    trayTypeCounts[t.type] = (trayTypeCounts[t.type] || 0) + 1;
+                });
+                
+                // Escolhe o tipo que mais aparece (prioridade) ou qualquer um
+                let chosenType = null;
+                let maxCount = 0;
+                for (let type in trayTypeCounts) {
+                    if (trayTypeCounts[type] > maxCount) {
+                        maxCount = trayTypeCounts[type];
+                        chosenType = type;
+                    }
+                }
+                
+                // Se não encontrou, pega o primeiro
+                if (!chosenType && tilesInTray.length > 0) {
+                    chosenType = tilesInTray[0].type;
+                }
+                
+                // Cria uma nova peça igual para adicionar ao tabuleiro
+                const bonusPiece = {
+                    id: Math.random().toString(36),
+                    type: chosenType,
+                    x: 0, // Será definida no embaralhamento
+                    y: 0,
+                    z: 0,
+                    blocked: false,
+                    el: null
+                };
+                
+                // Adiciona a peça de brinde ao tabuleiro
+                tilesOnBoard.push(bonusPiece);
+                
+                // Salva qual foi a peça de brinde para mostrar ao jogador
+                gameOverState.bonusPieceType = chosenType;
+            }
 
             // Validação: garante regra de trio
             const allTiles = [...tilesOnBoard, ...tilesInTray];
@@ -3350,7 +3340,7 @@
             skillUses.undo += 2;
             updateSkillCounter('undo');
 
-            // 🔀 Embaralha o tabuleiro incluindo a peça devolvida
+            // 🔀 Embaralha o tabuleiro incluindo a peça de brinde
             const positions = tilesOnBoard.map(t => ({ x: t.x, y: t.y, z: t.z }));
             positions.sort(() => 0.5 - Math.random());
             tilesOnBoard.forEach((tile, i) => {
@@ -3389,37 +3379,39 @@
             checkBlockedTiles();
             updateTrayUI();
 
-            // Mostra feedback do bônus
-            const continueText = currentLanguage === 'pt' ? 'CONTINUE JOGANDO!' :
-                                currentLanguage === 'en' ? 'KEEP PLAYING!' : '¡SIGUE JUGANDO!';
-            const bonusReceivedText = currentLanguage === 'pt' ? 'Você ganhou:' :
-                                     currentLanguage === 'en' ? 'You received:' : 'Recibiste:';
-            const pieceReturnedText = currentLanguage === 'pt' ? 'Peça devolvida ao tabuleiro embaralhado' :
-                                     currentLanguage === 'en' ? 'Piece returned to shuffled board' :
-                                     'Pieza devuelta al tablero barajado';
-            const trayNowText = currentLanguage === 'pt' ? 'Bandeja agora com 6 peças' :
-                               currentLanguage === 'en' ? 'Tray now with 6 pieces' :
-                               'Bandeja ahora con 6 piezas';
+            // Mostra feedback do bônus com a peça de brinde
+            const continueText = currentLanguage === 'pt' ? 'PEÇA DE BRINDE!' :
+                                currentLanguage === 'en' ? 'BONUS PIECE!' : '¡PIEZA DE REGALO!';
+            const bonusExplainText = currentLanguage === 'pt' ? 'Você ganhou uma peça extra para formar um trio:' :
+                                     currentLanguage === 'en' ? 'You got an extra piece to form a trio:' :
+                                     'Obtuviste una pieza extra para formar un trío:';
+            const bonusReceivedText = currentLanguage === 'pt' ? 'Peça adicionada ao tabuleiro embaralhado' :
+                                     currentLanguage === 'en' ? 'Piece added to shuffled board' :
+                                     'Pieza agregada al tablero barajado';
             const undoText = currentLanguage === 'pt' ? '+2 jogadas de Desfazer' :
                             currentLanguage === 'en' ? '+2 Undo moves' :
                             '+2 movimientos de Deshacer';
             
             modalContent.innerHTML = `
                 <h1 style="color: #27ae60;">🎁 ${continueText}</h1>
-                <p style="font-size: 1.1rem; margin: 20px 0;">${bonusReceivedText}</p>
+                <p style="font-size: 1.1rem; margin: 15px 0;">${bonusExplainText}</p>
+                <div style="font-size: 4rem; margin: 20px 0; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
+                            width: 100px; height: 100px; border-radius: 20px; display: flex; align-items: center; 
+                            justify-content: center; margin: 20px auto; box-shadow: 0 8px 20px rgba(245,87,108,0.4);">
+                    ${gameOverState.bonusPieceType || '🎁'}
+                </div>
                 <div style="background: #ecf0f1; padding: 15px; border-radius: 10px; margin: 15px 0;">
-                    <p style="margin: 8px 0;">🔀 ${pieceReturnedText}</p>
-                    <p style="margin: 8px 0;">📦 ${trayNowText}</p>
+                    <p style="margin: 8px 0;">🔀 ${bonusReceivedText}</p>
                     <p style="margin: 8px 0;">↩️ ${undoText}</p>
                 </div>
-                <button class="btn-primary" onclick="closeBonusModal()">${currentLanguage === 'pt' ? 'CONTINUAR' : currentLanguage === 'en' ? 'CONTINUE' : 'CONTINUAR'}</button>
+                <button class="btn-primary" onclick="closeBonusModal()">${currentLanguage === 'pt' ? 'CONTINUAR JOGANDO' : currentLanguage === 'en' ? 'KEEP PLAYING' : 'SEGUIR JUGANDO'}</button>
             `;
 
-            // Auto-fecha após 2 segundos
+            // Auto-fecha após 3 segundos
             setTimeout(() => {
                 overlay.style.display = 'none';
                 gameOverState = null;
-            }, 2000);
+            }, 3000);
         }
 
         function autoRetryLevel() {
