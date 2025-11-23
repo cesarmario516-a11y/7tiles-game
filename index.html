@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tile Home Clone - Fases</title>
-    
+
     <!-- Google AdSense/AdMob SDK - Substituir com seu próprio ID -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-     crossorigin="anonymous"></script>
-     
+        crossorigin="anonymous"></script>
+
     <!-- Fonte estilo cartoon -->
     <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Fredoka+One&display=swap" rel="stylesheet">
-     
+
     <style>
         /* --- ESTILO GERAL --- */
         body {
             margin: 0;
-            background: linear-gradient(to bottom, #20bf55, #01baef); /* Gradiente Verde/Azul vibrante */
+            background: linear-gradient(to bottom, #20bf55, #01baef);
+            /* Gradiente Verde/Azul vibrante */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
@@ -47,15 +49,15 @@
             z-index: 10;
             position: relative;
         }
-        
+
         .level-badge {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             color: white;
             padding: 8px 20px;
             border-radius: 20px;
             font-weight: bold;
             font-size: 1.5rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .coins-container {
@@ -76,7 +78,7 @@
             gap: 5px;
             font-weight: bold;
             color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .add-coins-btn {
@@ -92,7 +94,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
             transition: transform 0.1s;
         }
 
@@ -132,14 +134,15 @@
             background-color: #fdfdfd;
             border-radius: 10px;
             /* Sombra complexa para dar efeito 3D estilo Mahjong */
-            box-shadow: 
-                inset 0 -4px 0 #dcdcdc, 
-                0 4px 0 #bbb, 
-                0 6px 6px rgba(0,0,0,0.3);
+            box-shadow:
+                inset 0 -4px 0 #dcdcdc,
+                0 4px 0 #bbb,
+                0 6px 6px rgba(0, 0, 0, 0.3);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 40px; /* Emoji maior */
+            font-size: 40px;
+            /* Emoji maior */
             position: absolute;
             cursor: pointer;
             transition: all 0.1s ease-out;
@@ -159,15 +162,27 @@
 
         /* Animação de shake para peças bloqueadas */
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
         }
 
         /* --- BANDEJA (TRAY) --- */
         .tray-container {
-            background: #fbe4c2; /* Madeira clara */
-            width: auto; /* Ajusta ao conteúdo */
+            background: #fbe4c2;
+            /* Madeira clara */
+            width: auto;
+            /* Ajusta ao conteúdo */
             height: 90px;
             border-radius: 15px;
             border-bottom: 6px solid #8d6e63;
@@ -178,19 +193,20 @@
             justify-content: center;
             align-items: flex-end;
             position: relative;
-            padding: 0 15px 10px 15px; /* Padding lateral menor */
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            padding: 0 15px 10px 15px;
+            /* Padding lateral menor */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         .tray-slots {
             display: flex;
             gap: 6px;
         }
-        
+
         .slot {
             width: 50px;
             height: 56px;
-            background-color: rgba(0,0,0,0.05);
+            background-color: rgba(0, 0, 0, 0.05);
             border-radius: 8px;
             border: 1px dashed rgba(141, 110, 99, 0.4);
         }
@@ -212,11 +228,11 @@
             background: #fff;
             font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 4px 0 #ccc, 0 5px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 0 #ccc, 0 5px 10px rgba(0, 0, 0, 0.1);
             position: relative;
             transition: transform 0.1s;
         }
-        
+
         .skill-btn:active {
             transform: translateY(4px);
             box-shadow: 0 0 0 #ccc;
@@ -237,7 +253,7 @@
             justify-content: center;
             align-items: center;
         }
-        
+
         .skill-counter {
             position: absolute;
             top: -8px;
@@ -253,14 +269,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         /* --- POPUPS --- */
         #overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
             display: none;
             flex-direction: column;
             justify-content: center;
@@ -268,7 +287,7 @@
             z-index: 100;
             backdrop-filter: blur(5px);
         }
-        
+
         .modal-box {
             background: white;
             padding: 30px;
@@ -276,39 +295,82 @@
             text-align: center;
             width: 80%;
             max-width: 300px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             animation: popIn 0.3s ease;
         }
 
         @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         @keyframes slideDown {
-            0% { transform: translateY(-100px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         @keyframes bounceIn {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         @keyframes slideUp {
-            0% { transform: translateY(100px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+            0% {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
         }
 
         @keyframes confetti {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(600px) rotate(720deg); opacity: 0; }
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(600px) rotate(720deg);
+                opacity: 0;
+            }
         }
 
         /* Victory Screen */
@@ -322,7 +384,7 @@
             padding: 20px;
             border-radius: 20px;
             margin-bottom: 30px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             animation: slideDown 0.5s ease;
         }
 
@@ -330,7 +392,7 @@
             color: white;
             font-size: 1.2rem;
             margin: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .victory-level {
@@ -338,7 +400,7 @@
             font-size: 2.5rem;
             font-weight: bold;
             margin: 10px 0 0 0;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
         }
 
         .coin-reward {
@@ -346,7 +408,7 @@
             padding: 30px;
             border-radius: 20px;
             margin: 20px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             animation: bounceIn 0.6s ease 0.3s backwards;
         }
 
@@ -365,16 +427,16 @@
             background: linear-gradient(135deg, #2ecc71, #27ae60);
             padding: 20px;
             border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 20px rgba(46,204,113,0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 20px rgba(46, 204, 113, 0.5);
             animation: slideUp 0.5s ease 0.6s backwards, pulse 0.8s ease 1.2s infinite;
             cursor: pointer;
             transition: transform 0.1s;
         }
-        
+
         .next-level-box:hover {
             transform: scale(1.05);
         }
-        
+
         .next-level-box:active {
             transform: scale(0.95);
         }
@@ -384,7 +446,7 @@
             font-size: 2rem;
             font-weight: bold;
             margin: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .confetti-piece {
@@ -395,13 +457,23 @@
             animation: confetti 3s linear infinite;
         }
 
-        h1 { color: #333; margin: 0 0 10px 0; }
-        p { color: #666; font-size: 1.1rem; }
+        h1 {
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+
+        p {
+            color: #666;
+            font-size: 1.1rem;
+        }
 
         /* --- HOME SCREEN --- */
         #home-screen {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: linear-gradient(to bottom, #20bf55, #01baef);
             display: flex;
             flex-direction: column;
@@ -418,7 +490,7 @@
             padding: 35px 50px;
             border-radius: 25px;
             margin-bottom: 100px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
             border: none;
             position: relative;
             z-index: 2;
@@ -442,9 +514,9 @@
             font-family: 'Fredoka One', cursive;
             font-size: 9rem;
             color: white;
-            text-shadow: 
-                0 0 20px rgba(255,255,255,0.8),
-                4px 4px 0 rgba(0,0,0,0.2);
+            text-shadow:
+                0 0 20px rgba(255, 255, 255, 0.8),
+                4px 4px 0 rgba(0, 0, 0, 0.2);
             font-weight: 900;
             line-height: 0.8;
         }
@@ -453,10 +525,10 @@
             font-family: 'Fredoka One', cursive;
             font-size: 5rem;
             color: #ffa500;
-            text-shadow: 
+            text-shadow:
                 3px 3px 0 #ff8c00,
                 -2px -2px 0 #ffb84d,
-                5px 5px 10px rgba(0,0,0,0.3);
+                5px 5px 10px rgba(0, 0, 0, 0.3);
             font-weight: 900;
             letter-spacing: 5px;
         }
@@ -465,7 +537,7 @@
             font-family: 'Fredoka One', cursive;
             font-size: 1.5rem;
             color: white;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
             margin: 15px 0 0 0;
             font-weight: 900;
             letter-spacing: 2px;
@@ -481,28 +553,28 @@
             border: 5px solid white;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3), inset 0 -5px 0 rgba(0,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 -5px 0 rgba(0, 0, 0, 0.2);
             transition: transform 0.1s;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             position: relative;
             z-index: 2;
         }
 
         .home-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.4), inset 0 -5px 0 rgba(0,0,0,0.2);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4), inset 0 -5px 0 rgba(0, 0, 0, 0.2);
         }
 
         .home-button:active {
             transform: translateY(2px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3), inset 0 -2px 0 rgba(0,0,0,0.2);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
         }
 
         .current-level-display {
             color: white;
             font-size: 1.5rem;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             position: relative;
             z-index: 2;
         }
@@ -521,14 +593,14 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             border: none;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1.8rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             transition: transform 0.1s;
             z-index: 20;
             position: relative;
@@ -549,7 +621,7 @@
             border-radius: 30px;
             width: 85%;
             max-width: 350px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
             overflow: hidden;
         }
 
@@ -564,7 +636,7 @@
             font-size: 2rem;
             font-weight: bold;
             margin: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .config-close {
@@ -574,7 +646,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             border: none;
             color: white;
             font-size: 1.8rem;
@@ -586,7 +658,7 @@
         }
 
         .config-close:hover {
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
         }
 
         .config-content {
@@ -644,7 +716,7 @@
             background: white;
             border-radius: 50%;
             transition: transform 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .toggle-switch:not(.off) .toggle-knob {
@@ -695,7 +767,7 @@
             border-radius: 30px;
             width: 90%;
             max-width: 380px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
             overflow: hidden;
             max-height: 80vh;
             overflow-y: auto;
@@ -712,7 +784,7 @@
             font-size: 2rem;
             font-weight: bold;
             margin: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .shop-close {
@@ -722,7 +794,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             border: none;
             color: white;
             font-size: 1.8rem;
@@ -734,7 +806,7 @@
         }
 
         .shop-close:hover {
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
         }
 
         .shop-content {
@@ -768,13 +840,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
             transition: transform 0.1s;
         }
 
         .shop-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
         }
 
         .shop-item-info {
@@ -824,7 +896,7 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
             transition: transform 0.1s;
         }
 
@@ -860,7 +932,7 @@
             width: 85%;
             max-width: 400px;
             overflow: hidden;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
         }
 
         .language-header {
@@ -876,7 +948,7 @@
             font-weight: bold;
             margin: 0;
             text-align: center;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .language-close {
@@ -886,7 +958,7 @@
             width: 45px;
             height: 45px;
             border-radius: 50%;
-            background: rgba(231,76,60,1);
+            background: rgba(231, 76, 60, 1);
             border: 3px solid white;
             color: white;
             font-size: 1.5rem;
@@ -895,7 +967,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
             transition: transform 0.1s;
         }
 
@@ -921,7 +993,7 @@
             color: #5a6c7d;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -929,13 +1001,13 @@
 
         .language-option:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
         .language-option.selected {
             background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
             color: #2d3436;
-            box-shadow: 0 4px 15px rgba(253,203,110,0.4);
+            box-shadow: 0 4px 15px rgba(253, 203, 110, 0.4);
         }
 
         .language-checkmark {
@@ -959,13 +1031,13 @@
             width: 100%;
             margin-top: 10px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(39,174,96,0.3);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
             transition: transform 0.1s;
         }
 
         .language-confirm:hover {
             transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(39,174,96,0.4);
+            box-shadow: 0 7px 20px rgba(39, 174, 96, 0.4);
         }
 
         .language-confirm:active {
@@ -981,7 +1053,7 @@
             font-size: 1.3rem;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             transition: all 0.2s;
             min-width: 60px;
             aspect-ratio: 1;
@@ -992,7 +1064,7 @@
 
         .level-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(52,152,219,0.4);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
         }
 
         .level-btn:active {
@@ -1022,8 +1094,11 @@
             box-shadow: 0 4px 0 #1e8449;
             width: 100%;
         }
-        
-        .btn-primary:active { transform: translateY(4px); box-shadow: none; }
+
+        .btn-primary:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
 
         .btn-danger {
             margin-top: 20px;
@@ -1038,7 +1113,11 @@
             box-shadow: 0 4px 0 #962d22;
             width: 100%;
         }
-        .btn-danger:active { transform: translateY(4px); box-shadow: none; }
+
+        .btn-danger:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
 
         /* --- CONTADOR CIRCULAR --- */
         .countdown-circle {
@@ -1068,8 +1147,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .btn-continue {
@@ -1089,8 +1173,11 @@
             justify-content: center;
             gap: 10px;
         }
-        
-        .btn-continue:active { transform: translateY(4px); box-shadow: none; }
+
+        .btn-continue:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
 
         /* --- BANNER AD CONTAINER --- */
         .banner-ad-container {
@@ -1098,15 +1185,15 @@
             max-width: 320px;
             height: 50px;
             margin: 10px auto;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
     </style>
 </head>
+
 <body>
 
     <!-- MÚSICA DE FUNDO -->
@@ -1138,7 +1225,7 @@
                 <button class="add-coins-btn" onclick="openShop()">+</button>
             </div>
         </div>
-        
+
         <div class="home-logo" id="home-logo">
             <p class="home-title">
                 <span class="home-title-number">7</span>
@@ -1146,15 +1233,16 @@
             </p>
             <p class="home-subtitle">JOGO DE COMBINAR</p>
         </div>
-        
+
         <p class="current-level-display" id="home-level-display">Nível 1</p>
-        
+
         <button class="home-button" onclick="startGame()">Nível 1</button>
-        
-        <button class="home-button" onclick="openLevelSelector()" style="margin-top: 15px; background: linear-gradient(135deg, #9b59b6, #8e44ad); font-size: 1.2rem;">
+
+        <button class="home-button" onclick="openLevelSelector()"
+            style="margin-top: 15px; background: linear-gradient(135deg, #9b59b6, #8e44ad); font-size: 1.2rem;">
             📋 Selecionar Nível
         </button>
-        
+
         <button class="nav-btn" onclick="openConfig()" style="position: absolute; top: 20px; right: 20px; z-index: 10;">
             ⚙️
         </button>
@@ -1177,8 +1265,12 @@
     <!-- BANDEJA NO TOPO -->
     <div class="tray-container">
         <div class="tray-slots" id="tray-display">
-            <div class="slot"></div><div class="slot"></div><div class="slot"></div>
-            <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
             <div class="slot"></div>
         </div>
     </div>
@@ -1212,10 +1304,8 @@
     <!-- BANNER AD (Bottom of Screen) -->
     <div class="banner-ad-container">
         <!-- Google AdSense Banner - Substituir com seu código -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:320px;height:50px"
-             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-             data-ad-slot="XXXXXXXXXX"></ins>
+        <ins class="adsbygoogle" style="display:inline-block;width:320px;height:50px"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX"></ins>
     </div>
 
     <!-- OVERLAY (Modals) -->
@@ -1226,7 +1316,8 @@
     </div>
 
     <!-- CONFIG MODAL -->
-    <div id="config-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 250; backdrop-filter: blur(5px);">
+    <div id="config-overlay"
+        style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 250; backdrop-filter: blur(5px);">
         <div class="config-modal">
             <div class="config-header">
                 <h2 class="config-title">Configuração</h2>
@@ -1243,7 +1334,7 @@
                         <span class="toggle-check">✓</span>
                     </div>
                 </div>
-                
+
                 <div class="config-option">
                     <div class="config-label">
                         <span class="config-icon">🔊</span>
@@ -1254,7 +1345,7 @@
                         <span class="toggle-check">✓</span>
                     </div>
                 </div>
-                
+
                 <div class="config-option">
                     <div class="config-label">
                         <span class="config-icon">🔔</span>
@@ -1265,8 +1356,9 @@
                         <span class="toggle-check">✓</span>
                     </div>
                 </div>
-                
-                <button onclick="openLanguageModal()" style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 15px; border: none; border-radius: 15px; font-size: 1.3rem; font-weight: bold; width: 100%; margin-top: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+
+                <button onclick="openLanguageModal()"
+                    style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 15px; border: none; border-radius: 15px; font-size: 1.3rem; font-weight: bold; width: 100%; margin-top: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
                     🌐 Idioma / Language
                 </button>
             </div>
@@ -1277,7 +1369,8 @@
     </div>
 
     <!-- LANGUAGE MODAL -->
-    <div id="language-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 300; backdrop-filter: blur(5px);">
+    <div id="language-overlay"
+        style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 300; backdrop-filter: blur(5px);">
         <div class="language-modal">
             <div class="language-header">
                 <h2 class="language-title">Língua</h2>
@@ -1302,14 +1395,16 @@
     </div>
 
     <!-- LEVEL SELECTOR MODAL -->
-    <div id="level-selector-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 300; backdrop-filter: blur(5px);">
+    <div id="level-selector-overlay"
+        style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 300; backdrop-filter: blur(5px);">
         <div class="language-modal" style="max-height: 80vh; overflow-y: auto;">
             <div class="language-header">
                 <h2 class="language-title">📋 Selecionar Nível</h2>
                 <button class="language-close" onclick="closeLevelSelector()">✖</button>
             </div>
             <div class="language-content" style="max-height: 60vh; overflow-y: auto;">
-                <div id="level-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 10px;">
+                <div id="level-grid"
+                    style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 10px;">
                     <!-- Níveis serão gerados dinamicamente -->
                 </div>
             </div>
@@ -1317,7 +1412,8 @@
     </div>
 
     <!-- SHOP MODAL -->
-    <div id="shop-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 250; backdrop-filter: blur(5px);">
+    <div id="shop-overlay"
+        style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 250; backdrop-filter: blur(5px);">
         <div class="shop-modal">
             <div class="shop-header">
                 <h2 class="shop-title">🛒 Loja</h2>
@@ -1340,7 +1436,7 @@
                                 <button class="shop-price-btn" onclick="buyCoins(100, 0.99)">R$ 0,99</button>
                             </div>
                         </div>
-                        
+
                         <div class="shop-item coin-package">
                             <div class="shop-item-info">
                                 <div class="shop-item-icon">💎</div>
@@ -1353,7 +1449,7 @@
                                 <button class="shop-price-btn" onclick="buyCoins(500, 3.99)">R$ 3,99</button>
                             </div>
                         </div>
-                        
+
                         <div class="shop-item coin-package">
                             <div class="shop-item-info">
                                 <div class="shop-item-icon">💎</div>
@@ -1368,7 +1464,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Habilidades -->
                 <div class="shop-section">
                     <h3 class="shop-section-title">⚡ Habilidades</h3>
@@ -1390,7 +1486,7 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div class="shop-item">
                             <div class="shop-item-info">
                                 <div class="shop-item-icon">🔀</div>
@@ -1408,7 +1504,7 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div class="shop-item">
                             <div class="shop-item-info">
                                 <div class="shop-item-icon">💡</div>
@@ -1435,7 +1531,7 @@
     <script>
         // --- CONFIGURAÇÕES ---
         const TRAY_CAPACITY = 7;
-        
+
         // Categorias de tiles para progressão de dificuldade
         const TILE_CATEGORIES = {
             fruits: ['🍎', '🍌', '🍇', '🍉', '🍊', '🍓', '🍍', '🥝', '🍒', '🍑', '🍋', '🍐', '🥭', '🍈', '🫐', '🥥'],
@@ -1443,36 +1539,36 @@
             animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔'],
             objects: ['⚽', '🎾', '🎱', '🎯', '🎲', '🧸', '🎮', '🎪', '🎨', '🎭', '🎺', '🎸', '🔔', '🔑', '🔨', '⚙️', '🔧', '🪛', '🧤', '🥛', '☕', '🍵']
         };
-        
+
         const ALL_TILE_TYPES = [
             ...TILE_CATEGORIES.fruits,
             ...TILE_CATEGORIES.flowers,
             ...TILE_CATEGORIES.animals,
             ...TILE_CATEGORIES.objects
         ];
-        
+
         // Versão do jogo (atualizar a cada nova versão)
         const GAME_VERSION = '1.0.0';
-        
+
         let currentLevel = 1;
         let coins = 300;
-        
+
         let tilesOnBoard = [];
         let tilesInTray = [];
         let isProcessing = false; // Trava clique durante animações
-        
+
         // Sistema de Game Over com propaganda
         let countdownTimer = null;
         let countdownSeconds = 5;
         let gameOverState = null; // Guarda estado antes do game over
-        
+
         // Sistema de Skills - Agora com contadores de uso
         let skillUses = {
             undo: 0,      // Quantas vezes tem disponível
             shuffle: 0,   // Quantas vezes tem disponível
             hint: 0       // Quantas vezes tem disponível
         };
-        
+
         const SKILL_PRICES = {
             undo: 50,      // Preço em moedas por uso
             shuffle: 100,  // Preço em moedas por uso
@@ -1488,7 +1584,7 @@
 
         // Sistema de Idiomas
         let currentLanguage = 'pt';
-        
+
         const translations = {
             pt: {
                 level: 'Nível',
@@ -1587,7 +1683,7 @@
                 version: 'Versión'
             }
         };
-        
+
         function t(key) {
             return translations[currentLanguage][key] || key;
         }
@@ -1598,7 +1694,7 @@
             document.getElementById('home-screen').style.display = 'none';
             document.getElementById('nav-buttons').style.display = 'flex';
             startLevel(currentLevel);
-            
+
             // Registra acesso e agenda notificações
             scheduleNotification();
         }
@@ -1610,13 +1706,13 @@
             document.getElementById('nav-buttons').style.display = 'none';
             document.getElementById('home-level-display').innerText = `${t('level')} ${currentLevel}`;
             document.querySelector('.home-button').innerText = `${t('level')} ${currentLevel}`;
-            
+
             // Limpa o tabuleiro
             boardEl.innerHTML = '';
             tilesOnBoard = [];
             tilesInTray = [];
             updateTrayUI();
-            
+
             // Registra acesso
             scheduleNotification();
         }
@@ -1858,37 +1954,37 @@
 
         // --- SISTEMA DE IDIOMAS ---
         let selectedLanguage = 'pt'; // Temporário para seleção no modal
-        
+
         function openLanguageModal() {
             playClickSound();
             selectedLanguage = currentLanguage; // Inicia com idioma atual
             updateLanguageModal();
             document.getElementById('language-overlay').style.display = 'flex';
         }
-        
+
         function closeLanguageModal() {
             playClickSound();
             document.getElementById('language-overlay').style.display = 'none';
         }
-        
+
         function selectLanguage(lang) {
             playClickSound();
             selectedLanguage = lang;
             updateLanguageModal();
         }
-        
+
         function updateLanguageModal() {
             // Remove seleção de todos
             document.querySelectorAll('.language-option').forEach(opt => {
                 opt.classList.remove('selected');
             });
-            
+
             // Adiciona seleção ao escolhido
             const selected = document.getElementById(`lang-option-${selectedLanguage}`);
             if (selected) {
                 selected.classList.add('selected');
             }
-            
+
             // Atualiza título do modal
             const titles = {
                 pt: 'Língua',
@@ -1896,7 +1992,7 @@
                 es: 'Idioma'
             };
             document.querySelector('.language-title').innerText = titles[selectedLanguage];
-            
+
             // Atualiza texto do botão confirmar
             const confirmTexts = {
                 pt: 'Confirmar',
@@ -1905,7 +2001,7 @@
             };
             document.querySelector('.language-confirm').innerText = confirmTexts[selectedLanguage];
         }
-        
+
         function confirmLanguage() {
             currentLanguage = selectedLanguage;
             updateLanguage();
@@ -1917,7 +2013,7 @@
             playClickSound();
             const levelGrid = document.getElementById('level-grid');
             levelGrid.innerHTML = '';
-            
+
             // Gera botões para todos os 100 níveis
             for (let i = 1; i <= 100; i++) {
                 const btn = document.createElement('button');
@@ -1926,15 +2022,15 @@
                 btn.onclick = () => selectAndStartLevel(i);
                 levelGrid.appendChild(btn);
             }
-            
+
             document.getElementById('level-selector-overlay').style.display = 'flex';
         }
-        
+
         function closeLevelSelector() {
             playClickSound();
             document.getElementById('level-selector-overlay').style.display = 'none';
         }
-        
+
         function selectAndStartLevel(level) {
             playClickSound();
             currentLevel = level;
@@ -1944,58 +2040,58 @@
             startLevel(currentLevel);
             scheduleNotification();
         }
-        
+
         function changeLanguage(lang) {
             currentLanguage = lang;
             updateLanguage();
         }
-        
+
         function updateLanguage() {
             // Atualiza títulos e labels
             document.querySelector('.config-title').innerText = t('config');
             document.querySelector('.shop-title').innerText = t('shop');
-            
+
             // Atualiza labels das configurações
             const configLabels = document.querySelectorAll('.config-label span:not(.config-icon)');
             configLabels[0].innerText = t('music');
             configLabels[1].innerText = t('sound');
             configLabels[2].innerText = t('notification');
-            
+
             // Atualiza seções da loja
             const shopSections = document.querySelectorAll('.shop-section-title');
             shopSections[0].innerHTML = `💰 ${t('coins')}`;
             shopSections[1].innerHTML = `⚡ ${t('skills')}`;
-            
+
             // Atualiza itens da loja
             const skillNames = document.querySelectorAll('.shop-item:not(.coin-package) .shop-item-name');
             const skillDescs = document.querySelectorAll('.shop-item:not(.coin-package) .shop-item-desc');
-            
+
             if (skillNames[0]) skillNames[0].innerText = t('undo');
             if (skillDescs[0]) skillDescs[0].innerText = t('undoDesc');
-            
+
             if (skillNames[1]) skillNames[1].innerText = t('shuffle');
             if (skillDescs[1]) skillDescs[1].innerText = t('shuffleDesc');
-            
+
             if (skillNames[2]) skillNames[2].innerText = t('hint');
             if (skillDescs[2]) skillDescs[2].innerText = t('hintDesc');
-            
+
             // Atualiza botões de assistir anúncio
             const watchBtns = document.querySelectorAll('.shop-price-btn.ad-option');
             watchBtns.forEach(btn => {
                 btn.innerHTML = `📺 ${t('watch')}`;
             });
-            
+
             // Atualiza pacotes de moedas
             const coinDescs = document.querySelectorAll('.coin-package .shop-item-desc');
             if (coinDescs[0]) coinDescs[0].innerText = t('smallPack');
             if (coinDescs[1]) coinDescs[1].innerText = t('mediumPack');
             if (coinDescs[2]) coinDescs[2].innerText = t('largePack');
-            
+
             // Atualiza badge de nível
             document.getElementById('level-display').innerText = `${t('level')} ${currentLevel}`;
             document.getElementById('home-level-display').innerText = `${t('level')} ${currentLevel}`;
             document.querySelector('.home-button').innerText = `${t('level')} ${currentLevel}`;
-            
+
             // Atualiza versão
             const footer = document.querySelector('.config-footer');
             if (footer) footer.innerText = `${t('version')}: ${GAME_VERSION}`;
@@ -2025,7 +2121,7 @@
 
         function buySkillWithCoins(skillName) {
             const price = SKILL_PRICES[skillName];
-            
+
             if (coins >= price) {
                 if (confirm(`Comprar 1 uso de ${skillName} por ${price} moedas?`)) {
                     coins -= price;
@@ -2063,57 +2159,57 @@
         }
 
         // --- SISTEMA DE ANÚNCIOS ---
-        
+
         // Gerenciador de Anúncios Intersticiais (Tela Cheia)
         const AdManager = {
             interstitialLoaded: false,
-            
+
             // Inicializa os anúncios
-            init: function() {
+            init: function () {
                 // Carrega anúncios banner
                 this.loadBannerAd();
-                
+
                 // Pré-carrega anúncio intersticial
                 this.preloadInterstitial();
             },
-            
+
             // Carrega banner do AdSense
-            loadBannerAd: function() {
+            loadBannerAd: function () {
                 try {
                     (adsbygoogle = window.adsbygoogle || []).push({});
                 } catch (e) {
                     console.log('Banner ad not loaded:', e);
                 }
             },
-            
+
             // Pré-carrega anúncio intersticial
-            preloadInterstitial: function() {
+            preloadInterstitial: function () {
                 // Simula carregamento (na versão real, use Google AdMob SDK)
                 setTimeout(() => {
                     this.interstitialLoaded = true;
                     console.log('Intersticial carregado');
                 }, 2000);
             },
-            
+
             // Mostra anúncio intersticial (tela cheia)
-            showInterstitial: function(callback) {
+            showInterstitial: function (callback) {
                 if (!this.interstitialLoaded) {
                     console.log('Anúncio não carregado, simulando...');
                     this.simulateAd(callback);
                     return;
                 }
-                
+
                 // Aqui será integrado o código real do AdMob
                 // Por enquanto, simula o anúncio
                 this.simulateAd(callback);
-                
+
                 // Recarrega próximo anúncio
                 this.interstitialLoaded = false;
                 this.preloadInterstitial();
             },
-            
+
             // Simula anúncio para testes
-            simulateAd: function(callback) {
+            simulateAd: function (callback) {
                 modalContent.innerHTML = `
                     <h1>📺 PROPAGANDA</h1>
                     <p>Assistindo anúncio...</p>
@@ -2124,16 +2220,16 @@
                     </div>
                     <p id="ad-countdown" style="color: #666;">Aguarde 3 segundos...</p>
                 `;
-                
+
                 let countdown = 3;
                 const countdownEl = document.getElementById('ad-countdown');
-                
+
                 const adTimer = setInterval(() => {
                     countdown--;
                     if (countdownEl) {
                         countdownEl.innerText = countdown > 0 ? `Aguarde ${countdown} segundos...` : 'Fechando...';
                     }
-                    
+
                     if (countdown <= 0) {
                         clearInterval(adTimer);
                         if (callback) callback();
@@ -2141,17 +2237,17 @@
                 }, 1000);
             }
         };
-        
+
         // Inicializa sistema de anúncios quando página carregar
         window.addEventListener('load', () => {
             AdManager.init();
-            
+
             // Inicializa versão do jogo
             const versionElement = document.getElementById('game-version');
             if (versionElement) {
                 versionElement.innerText = GAME_VERSION;
             }
-            
+
             // Inicializa seleção de idioma
             updateLanguageModal();
         });
@@ -2159,7 +2255,7 @@
         // --- DEFINIÇÃO DE LAYOUTS (MAPAS) ---
         // x, y: Posição em pixels (relativo ao centro 350x400)
         // z: Camada (0 = base, 1 = meio, 2 = topo)
-        
+
         // Helper para criar grade
         function grid(col, row, layer) {
             return { x: col * 55, y: row * 58, z: layer };
@@ -2169,15 +2265,15 @@
         function generateLevel(levelNum) {
             // Progressão de dificuldade agressiva
             const difficulty = Math.min(Math.floor((levelNum - 1) / 3), 33); // 0-33 (grupos de 3 níveis)
-            
+
             // LIMITES PARA CABER NA TELA DE CELULAR (700x800px área útil)
             // Tile = 60x66px, espaçamento = 55x58px
             const maxCols = 6; // Máximo 6 colunas (6 * 55 = 330px)
             const maxRows = 6; // Máximo 6 linhas (6 * 58 = 348px)
-            
+
             // PROGRESSÃO MUITO MAIS AGRESSIVA
             let baseSize, layers, typesCount;
-            
+
             if (levelNum === 1) {
                 // Nível 1: 9 peças (3x3, 1 camada, 3 tipos)
                 baseSize = 3;
@@ -2219,12 +2315,12 @@
                 layers = Math.min(10 + Math.floor((levelNum - 70) / 10), 12);
                 typesCount = Math.min(20 + Math.floor((levelNum - 70) / 3), 30);
             }
-            
+
             let layout = [];
-            
+
             // Gera base (grade completa ou padrão)
             const pattern = levelNum % 5;
-            
+
             if (pattern === 0) { // Grade completa
                 for (let y = 0; y < baseSize; y++) {
                     for (let x = 0; x < baseSize; x++) {
@@ -2269,7 +2365,7 @@
                     }
                 }
             }
-            
+
             // Adiciona camadas superiores (pirâmide) - SUPORTA ATÉ 12 CAMADAS
             // Estratégia: camadas centralizadas para forçar desbloquear várias peças
             for (let layer = 1; layer < layers; layer++) {
@@ -2283,10 +2379,10 @@
                     // Camadas muito altas: mantém 3x3 para criar mais bloqueios
                     layerSize = Math.max(3, Math.floor(baseSize * 0.5));
                 }
-                
+
                 // Offset centralizado para criar mais sobreposições estratégicas
                 const offset = Math.floor((baseSize - layerSize) / 2);
-                
+
                 for (let y = 0; y < layerSize && (y + offset) < maxRows; y++) {
                     for (let x = 0; x < layerSize && (x + offset) < maxCols; x++) {
                         // Densidade: mais peças em camadas médias para criar bloqueios
@@ -2300,14 +2396,14 @@
                         } else {
                             density = 0.3; // Ainda menos nas camadas muito altas
                         }
-                        
+
                         if (Math.random() > density) {
                             layout.push(grid(x + offset, y + offset, layer));
                         }
                     }
                 }
             }
-            
+
             return { layout, typesCount };
         }
 
@@ -2333,9 +2429,9 @@
             if (!config) {
                 // Se acabou os níveis, volta pro 1 ou gera random (aqui volta pro 1)
                 config = LEVELS[1];
-                const completeMsg = currentLanguage === 'pt' ? 'Você zerou o protótipo! Voltando ao Nível 1.' : 
-                                   currentLanguage === 'en' ? 'You completed the prototype! Back to Level 1.' : 
-                                   '¡Completaste el prototipo! Volviendo al Nivel 1.';
+                const completeMsg = currentLanguage === 'pt' ? 'Você zerou o protótipo! Voltando ao Nível 1.' :
+                    currentLanguage === 'en' ? 'You completed the prototype! Back to Level 1.' :
+                        '¡Completaste el prototipo! Volviendo al Nivel 1.';
                 alert(completeMsg);
                 currentLevel = 1;
                 levelDisplay.innerText = t('level') + " 1";
@@ -2343,23 +2439,23 @@
 
             // 2. Prepara Tipos de Peças (Garantir trios)
             const totalSlots = config.layout.length;
-            
+
             // IMPORTANTE: Total DEVE ser divisível por 3 para garantir que todas as peças formem trios
             const workableSlots = Math.floor(totalSlots / 3) * 3; // Força divisibilidade por 3
             const layoutToUse = config.layout.slice(0, workableSlots);
-            
+
             const triosNeeded = workableSlots / 3;
-            
+
             // Seleciona frutas aleatórias (limitado pelo typesCount do nível)
             let availableTypes = [...ALL_TILE_TYPES].sort(() => 0.5 - Math.random()).slice(0, config.typesCount);
-            
+
             // NOVA LÓGICA: Distribui trios completos de forma equilibrada
             let typesPool = [];
-            
+
             // Calcula quantos trios cada tipo deve ter (distribuição equilibrada)
             const triosPerType = Math.floor(triosNeeded / availableTypes.length);
             const remainingTrios = triosNeeded % availableTypes.length;
-            
+
             // Adiciona trios equilibrados para cada tipo
             availableTypes.forEach((type, index) => {
                 const trios = triosPerType + (index < remainingTrios ? 1 : 0);
@@ -2392,15 +2488,15 @@
             const el = document.createElement('div');
             el.classList.add('tile');
             el.innerText = type;
-            
+
             // Offset visual para mostrar camadas (cada camada desloca -3px em x e y)
             const visualOffset = z * -3;
             el.style.left = (x + visualOffset) + 'px';
             el.style.top = (y + visualOffset) + 'px';
-            
+
             // Z-index e sombra baseados na camada
             el.style.zIndex = 10 + z;
-            
+
             // Cor e sombra progressivas por camada
             if (z === 0) {
                 el.style.backgroundColor = "#e8e8e8"; // Base mais escura
@@ -2417,7 +2513,7 @@
             }
 
             el.onclick = () => handleTileClick(tile);
-            
+
             boardEl.appendChild(el);
             tile.el = el;
             tilesOnBoard.push(tile);
@@ -2430,11 +2526,11 @@
             // Cada peça só é bloqueada se tiver OUTRA peça em cima dela
             tilesOnBoard.forEach(lower => {
                 lower.blocked = false;
-                
+
                 // Procura se tem QUALQUER peça em cima (mesmo parcial)
                 for (let upper of tilesOnBoard) {
                     if (upper === lower) continue;
-                    
+
                     // Se está numa camada superior (mesmo que seja 1 camada acima)
                     if (upper.z > lower.z) {
                         // Verifica QUALQUER sobreposição (considera offset visual)
@@ -2442,22 +2538,22 @@
                         const upperVisualY = upper.y + (upper.z * -3);
                         const lowerVisualX = lower.x + (lower.z * -3);
                         const lowerVisualY = lower.y + (lower.z * -3);
-                        
+
                         // Dimensões da tile
                         const tileWidth = 60;
                         const tileHeight = 66;
-                        
+
                         // Calcula limites de cada tile
                         const upperLeft = upperVisualX;
                         const upperRight = upperVisualX + tileWidth;
                         const upperTop = upperVisualY;
                         const upperBottom = upperVisualY + tileHeight;
-                        
+
                         const lowerLeft = lowerVisualX;
                         const lowerRight = lowerVisualX + tileWidth;
                         const lowerTop = lowerVisualY;
                         const lowerBottom = lowerVisualY + tileHeight;
-                        
+
                         // Verifica se há QUALQUER sobreposição (mesmo 1px)
                         const hasOverlap = !(
                             upperRight <= lowerLeft ||   // upper está totalmente à esquerda
@@ -2465,7 +2561,7 @@
                             upperBottom <= lowerTop ||   // upper está totalmente acima
                             upperTop >= lowerBottom      // upper está totalmente abaixo
                         );
-                        
+
                         // Se houver QUALQUER sobreposição, bloqueia
                         if (hasOverlap) {
                             lower.blocked = true;
@@ -2473,7 +2569,7 @@
                         }
                     }
                 }
-                
+
                 // Update Visual - Peças bloqueadas ficam escuras e com cursor bloqueado
                 if (lower.blocked) {
                     lower.el.classList.add('blocked');
@@ -2501,7 +2597,7 @@
                 }
                 return;
             }
-            
+
             // Game Over check prévio
             if (tilesInTray.length >= TRAY_CAPACITY) return;
 
@@ -2517,7 +2613,7 @@
 
             // 2. Animação visual simples (some do board)
             tile.el.style.display = 'none'; // No futuro, animar voando
-            
+
             // 3. Recalcula bloqueios e tabuleiro
             checkBlockedTiles();
             updateTrayUI();
@@ -2536,7 +2632,7 @@
             slots.forEach(s => s.innerHTML = '');
 
             // Ordena peças na bandeja para facilitar visualização do match
-            let displayList = [...tilesInTray]; 
+            let displayList = [...tilesInTray];
 
             displayList.forEach((tile, i) => {
                 if (i < 7 && slots[i]) {
@@ -2581,38 +2677,38 @@
                 showWinModal();
                 return;
             }
-            
+
             // Verifica Game Over SOMENTE se não há possibilidade de match
             // Não verifica se a bandeja está "quase cheia" - só quando realmente sem espaço
             if (tilesInTray.length >= TRAY_CAPACITY) {
                 // Verifica se há algum trio prestes a formar
                 const counts = {};
                 tilesInTray.forEach(t => counts[t.type] = (counts[t.type] || 0) + 1);
-                
+
                 // Se algum tipo já tem 3+, não é game over ainda (o match vai processar)
                 for (let type in counts) {
                     if (counts[type] >= 3) {
                         return; // Não mostra game over, deixa o match processar
                     }
                 }
-                
+
                 // Só mostra game over se realmente não há matches possíveis
                 showLoseModal();
             }
         }
-        
+
         function hasValidMoves() {
             // Verifica se há pelo menos uma peça não bloqueada
             const availableTiles = tilesOnBoard.filter(t => !t.blocked);
             if (availableTiles.length === 0) return false;
-            
+
             // Verifica se consegue completar pelo menos um trio com as peças disponíveis
             const allTiles = [...tilesOnBoard, ...tilesInTray];
             const typeCounts = {};
             allTiles.forEach(t => {
                 typeCounts[t.type] = (typeCounts[t.type] || 0) + 1;
             });
-            
+
             // Se algum tipo tem menos de 3 peças no total, é impossível completar
             for (let type in typeCounts) {
                 if (typeCounts[type] % 3 !== 0) {
@@ -2620,10 +2716,10 @@
                     return false;
                 }
             }
-            
+
             return true;
         }
-        
+
         function showNoMovesModal() {
             modalContent.innerHTML = `
                 <h1>⚠️ SEM JOGADAS!</h1>
@@ -2643,7 +2739,7 @@
         }
 
         // --- SISTEMA DE SKILLS ---
-        
+
         function useSkill(skillType) {
             // Verifica se tem usos disponíveis
             if (skillUses[skillType] <= 0) {
@@ -2651,11 +2747,11 @@
                 showUnlockModal(skillType);
                 return;
             }
-            
+
             // Executa a skill e só consome se for bem-sucedida
             let success = false;
-            
-            switch(skillType) {
+
+            switch (skillType) {
                 case 'undo':
                     success = undoLastMove();
                     break;
@@ -2667,18 +2763,18 @@
                     success = showHint();
                     break;
             }
-            
+
             // Só consome o uso se a skill foi executada com sucesso
             if (success) {
                 skillUses[skillType]--;
                 updateSkillCounter(skillType);
             }
         }
-        
+
         function updateSkillCounter(skillType) {
             const counter = document.getElementById(`${skillType}-counter`);
             const lock = document.getElementById(`${skillType}-lock`);
-            
+
             if (skillUses[skillType] > 0) {
                 counter.style.display = 'flex';
                 counter.innerText = skillUses[skillType];
@@ -2688,7 +2784,7 @@
                 lock.style.display = 'flex';
             }
         }
-        
+
         function showUnlockModal(skillType) {
             const price = SKILL_PRICES[skillType];
             const skillNames = {
@@ -2696,19 +2792,19 @@
                 shuffle: '🔀',
                 hint: '💡'
             };
-            
+
             const skillNamesText = {
                 undo: 'Desfazer',
                 shuffle: 'Embaralhar',
                 hint: 'Dica'
             };
-            
+
             const skillDescriptions = {
                 undo: 'Remove a última peça da bandeja',
                 shuffle: 'Reorganiza as peças no tabuleiro',
                 hint: 'Destaca uma peça disponível'
             };
-            
+
             modalContent.innerHTML = `
                 <div style="position: relative;">
                     <h1 style="font-size: 1.8rem; margin: 0 0 15px 0; color: #2c3e50;">Skill</h1>
@@ -2732,10 +2828,10 @@
                         <p style="color: ${coins >= price ? '#27ae60' : '#e74c3c'}; font-weight: bold; margin: 8px 0; font-size: 0.9rem;">
                             Você tem: ${coins} moedas
                         </p>
-                        ${coins >= price ? 
-                            `<button onclick="unlockSkillWithCoins('${skillType}')" style="background: linear-gradient(135deg, #27ae60, #229954); color: white; border: none; border-radius: 25px; padding: 12px 25px; font-size: 1rem; font-weight: bold; width: 100%; cursor: pointer; box-shadow: 0 3px 10px rgba(39,174,96,0.3); margin-top: 5px;">COMPRAR COM MOEDAS</button>` :
-                            `<button style="background: #bdc3c7; color: white; border: none; border-radius: 25px; padding: 12px 25px; font-size: 1rem; font-weight: bold; width: 100%; cursor: not-allowed; margin-top: 5px; opacity: 0.6;">MOEDAS INSUFICIENTES</button>`
-                        }
+                        ${coins >= price ?
+                    `<button onclick="unlockSkillWithCoins('${skillType}')" style="background: linear-gradient(135deg, #27ae60, #229954); color: white; border: none; border-radius: 25px; padding: 12px 25px; font-size: 1rem; font-weight: bold; width: 100%; cursor: pointer; box-shadow: 0 3px 10px rgba(39,174,96,0.3); margin-top: 5px;">COMPRAR COM MOEDAS</button>` :
+                    `<button style="background: #bdc3c7; color: white; border: none; border-radius: 25px; padding: 12px 25px; font-size: 1rem; font-weight: bold; width: 100%; cursor: not-allowed; margin-top: 5px; opacity: 0.6;">MOEDAS INSUFICIENTES</button>`
+                }
                     </div>
                     
                     <!-- Opção 2: Propaganda -->
@@ -2756,16 +2852,16 @@
             `;
             overlay.style.display = 'flex';
         }
-        
+
         function unlockSkillWithCoins(skillType) {
             const price = SKILL_PRICES[skillType];
-            
+
             if (coins >= price) {
                 coins -= price;
                 updateCoinDisplay();
                 skillUses[skillType]++;
                 updateSkillCounter(skillType);
-                
+
                 // Mostra mensagem de sucesso
                 modalContent.innerHTML = `
                     <h1>✅ COMPRADO!</h1>
@@ -2778,16 +2874,16 @@
                 `;
             }
         }
-        
+
         function unlockSkillWithAd(skillType) {
             overlay.style.display = 'none';
-            
+
             // Mostra anúncio
             AdManager.showInterstitial(() => {
                 // Após o anúncio, adiciona 1 uso
                 skillUses[skillType]++;
                 updateSkillCounter(skillType);
-                
+
                 // Mostra mensagem de sucesso
                 modalContent.innerHTML = `
                     <h1>✅ DESBLOQUEADO!</h1>
@@ -2801,22 +2897,22 @@
                 overlay.style.display = 'flex';
             });
         }
-        
+
         // Skills funcionais
         let lastMove = null; // Guarda última jogada para undo
-        
+
         function undoLastMove() {
             if (!lastMove || tilesInTray.length === 0) {
                 alert('Nenhuma jogada para desfazer!');
                 return false; // Retorna false para não consumir o uso
             }
-            
+
             // Remove última peça da bandeja
             const lastTile = tilesInTray.pop();
-            
+
             // Retorna ao tabuleiro
             tilesOnBoard.push(lastTile);
-            
+
             // Recria elemento visual
             const el = document.createElement('div');
             el.classList.add('tile');
@@ -2828,11 +2924,11 @@
             el.onclick = () => handleTileClick(lastTile);
             boardEl.appendChild(el);
             lastTile.el = el;
-            
+
             checkBlockedTiles();
             updateTrayUI();
             lastMove = null;
-            
+
             return true; // Retorna true para consumir o uso
         }
 
@@ -2845,16 +2941,16 @@
                 t.el.innerText = t.type;
             });
         }
-        
+
         function showHint() {
             // Encontra a melhor jogada (peça que tem par na bandeja ou que formaria trio)
             let bestTile = null;
-            
+
             // Primeiro, procura peça que formaria trio na bandeja
             const trayTypes = tilesInTray.map(t => t.type);
             for (let tile of tilesOnBoard) {
                 if (tile.blocked) continue;
-                
+
                 const typeCount = trayTypes.filter(t => t === tile.type).length;
                 if (typeCount === 2) {
                     // Essa peça completaria um trio!
@@ -2862,12 +2958,12 @@
                     break;
                 }
             }
-            
+
             // Se não encontrou trio, procura peça que tem pelo menos 1 par na bandeja
             if (!bestTile) {
                 for (let tile of tilesOnBoard) {
                     if (tile.blocked) continue;
-                    
+
                     const typeCount = trayTypes.filter(t => t === tile.type).length;
                     if (typeCount >= 1) {
                         bestTile = tile;
@@ -2875,34 +2971,34 @@
                     }
                 }
             }
-            
+
             // Se ainda não encontrou, pega qualquer peça disponível
             if (!bestTile) {
                 bestTile = tilesOnBoard.find(t => !t.blocked);
             }
-            
+
             if (!bestTile || !bestTile.el) {
                 alert('Nenhuma dica disponível!');
                 return false;
             }
-            
+
             // Adiciona animação de balanço e destaque
             bestTile.el.style.border = '3px solid #f39c12';
             bestTile.el.style.boxShadow = '0 0 20px #f39c12';
-            
+
             // Animação de balanço (shake)
             let shakeCount = 0;
             const shakeInterval = setInterval(() => {
                 const angle = shakeCount % 2 === 0 ? 10 : -10;
                 bestTile.el.style.transform = `rotate(${angle}deg) scale(1.1)`;
                 shakeCount++;
-                
+
                 if (shakeCount >= 6) {
                     clearInterval(shakeInterval);
                     bestTile.el.style.transform = 'rotate(0deg) scale(1)';
                 }
             }, 100);
-            
+
             // Remove destaque após 3 segundos
             setTimeout(() => {
                 if (bestTile.el) {
@@ -2911,7 +3007,7 @@
                     bestTile.el.style.transform = 'rotate(0deg) scale(1)';
                 }
             }, 3000);
-            
+
             return true;
         }
 
@@ -2920,13 +3016,13 @@
         function showWinModal() {
             // Toca som de vitória
             playVictorySound();
-            
+
             // Calcula recompensa de moedas
             const coinReward = currentLevel * 50; // 50 moedas por nível
-            
+
             // Cria confetes
             createConfetti();
-            
+
             modalContent.innerHTML = `
                 <div class="victory-screen">
                     <div class="victory-banner">
@@ -2946,17 +3042,17 @@
                 </div>
             `;
             overlay.style.display = 'flex';
-            
+
             // Adiciona moedas após 1 segundo (durante animação)
             setTimeout(() => {
                 addCoins(coinReward);
             }, 1000);
         }
-        
+
         function createConfetti() {
             const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#00d2d3'];
             const confettiCount = 50;
-            
+
             for (let i = 0; i < confettiCount; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti-piece';
@@ -2965,7 +3061,7 @@
                 confetti.style.animationDelay = Math.random() * 3 + 's';
                 confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
                 document.body.appendChild(confetti);
-                
+
                 // Remove após animação
                 setTimeout(() => confetti.remove(), 5000);
             }
@@ -2978,15 +3074,19 @@
                 trayTiles: [...tilesInTray],
                 level: currentLevel
             };
-            
+
             // Mostra modal com contador
             countdownSeconds = 5;
             const trayFullText = currentLanguage === 'pt' ? 'BANDEJA CHEIA!' : currentLanguage === 'en' ? 'TRAY FULL!' : '¡BANDEJA LLENA!';
-            const watchAdText = currentLanguage === 'pt' ? 'Assista um anúncio e CONTINUE jogando!' : currentLanguage === 'en' ? 'Watch an ad and KEEP PLAYING!' : '¡Mira un anuncio y SIGUE JUGANDO!';
-            const bonusText = currentLanguage === 'pt' ? 'Ganhe +2 jogadas e embaralhamento!' : currentLanguage === 'en' ? 'Get +2 moves and shuffle!' : '¡Obtén +2 movimientos y barajar!';
+            const watchAdText = currentLanguage === 'pt' ? 'Assista anúncio e ESCOLHA 1 peça para devolver!' : 
+                               currentLanguage === 'en' ? 'Watch ad and CHOOSE 1 piece to return!' : 
+                               '¡Mira anuncio y ELIGE 1 pieza para devolver!';
+            const bonusText = currentLanguage === 'pt' ? 'Continue jogando com 6 peças + embaralhamento' : 
+                             currentLanguage === 'en' ? 'Keep playing with 6 pieces + shuffle' : 
+                             'Sigue jugando con 6 piezas + barajar';
             const waitText = currentLanguage === 'pt' ? 'Ou aguarde' : currentLanguage === 'en' ? 'Or wait' : 'O espera';
             const restartText = currentLanguage === 'pt' ? 's para reiniciar' : currentLanguage === 'en' ? 's to restart' : 's para reiniciar';
-            
+
             modalContent.innerHTML = `
                 <h1>${trayFullText}</h1>
                 <p style="font-size: 1.1rem; font-weight: bold; color: #27ae60; margin: 10px 0;">${watchAdText}</p>
@@ -2996,24 +3096,24 @@
                     <div class="countdown-number" id="countdown-num">5</div>
                 </div>
                 <button class="btn-continue" onclick="watchAdAndContinue()">
-                    ▶ ${currentLanguage === 'pt' ? 'CONTINUAR' : currentLanguage === 'en' ? 'CONTINUE' : 'CONTINUAR'} (${currentLanguage === 'pt' ? 'Anúncio' : currentLanguage === 'en' ? 'Ad' : 'Anuncio'})
+                    ▶ ${currentLanguage === 'pt' ? 'ASSISTIR E ESCOLHER' : currentLanguage === 'en' ? 'WATCH & CHOOSE' : 'VER Y ELEGIR'} 🎯
                 </button>
                 <p style="font-size: 0.9rem; color: #999; margin-top: 10px;">${waitText} ${countdownSeconds}${restartText}</p>
             `;
             overlay.style.display = 'flex';
-            
+
             // Inicia contagem regressiva
             startCountdown();
         }
-        
+
         function startCountdown() {
             const countdownEl = document.getElementById('countdown-num');
             if (!countdownEl) return;
-            
+
             countdownTimer = setInterval(() => {
                 countdownSeconds--;
                 countdownEl.innerText = countdownSeconds;
-                
+
                 if (countdownSeconds <= 0) {
                     clearInterval(countdownTimer);
                     // Tempo esgotado - reinicia o nível
@@ -3021,28 +3121,81 @@
                 }
             }, 1000);
         }
-        
+
         function watchAdAndContinue() {
             // Para o contador
             if (countdownTimer) {
                 clearInterval(countdownTimer);
                 countdownTimer = null;
             }
-            
+
             // Mostra anúncio intersticial usando o AdManager
             AdManager.showInterstitial(() => {
-                // Callback: executado após o anúncio
-                restoreGameState();
+                // Callback: executado após o anúncio - mostra seletor de peça
+                showPieceSelector();
             });
         }
         
+        function showPieceSelector() {
+            if (!gameOverState || gameOverState.trayTiles.length === 0) {
+                restoreGameState();
+                return;
+            }
+            
+            const selectText = currentLanguage === 'pt' ? 'Escolha UMA peça para devolver ao tabuleiro' : 
+                              currentLanguage === 'en' ? 'Choose ONE piece to return to the board' : 
+                              'Elige UNA pieza para devolver al tablero';
+            
+            // Mostra as 7 peças da bandeja para escolher
+            let piecesHTML = '';
+            gameOverState.trayTiles.forEach((tile, index) => {
+                piecesHTML += `
+                    <div class="selectable-piece" onclick="selectPieceToReturn(${index})" 
+                         style="font-size: 3rem; padding: 15px; margin: 8px; background: white; 
+                                border: 3px solid #ddd; border-radius: 12px; cursor: pointer;
+                                transition: all 0.2s; display: inline-block; min-width: 70px;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+                         onmouseover="this.style.transform='scale(1.1)'; this.style.borderColor='#27ae60';"
+                         onmouseout="this.style.transform='scale(1)'; this.style.borderColor='#ddd';">
+                        ${tile.type}
+                    </div>
+                `;
+            });
+            
+            modalContent.innerHTML = `
+                <h1 style="font-size: 1.6rem; margin-bottom: 15px;">🎯 ${selectText}</h1>
+                <div style="background: #ecf0f1; padding: 15px; border-radius: 12px; margin: 20px 0;">
+                    ${piecesHTML}
+                </div>
+                <p style="font-size: 0.9rem; color: #7f8c8d; margin-top: 10px;">
+                    ${currentLanguage === 'pt' ? 'A peça escolhida voltará ao tabuleiro embaralhado' : 
+                      currentLanguage === 'en' ? 'The chosen piece will return to the shuffled board' :
+                      'La pieza elegida volverá al tablero barajado'}
+                </p>
+            `;
+            overlay.style.display = 'flex';
+        }
+        
+        function selectPieceToReturn(pieceIndex) {
+            if (!gameOverState) return;
+            
+            // Remove a peça escolhida da bandeja
+            const selectedPiece = gameOverState.trayTiles.splice(pieceIndex, 1)[0];
+            
+            // Adiciona de volta ao tabuleiro
+            gameOverState.boardTiles.push(selectedPiece);
+            
+            // Agora restaura o jogo com a peça devolvida
+            restoreGameStateWithReturnedPiece();
+        }
+
         // Valida se todos os tipos de peças têm contagem divisível por 3
         function validateTrioRule(tiles) {
             const typeCounts = {};
             tiles.forEach(t => {
                 typeCounts[t.type] = (typeCounts[t.type] || 0) + 1;
             });
-            
+
             // Todos os tipos devem ter contagem divisível por 3
             for (let type in typeCounts) {
                 if (typeCounts[type] % 3 !== 0) {
@@ -3054,34 +3207,34 @@
 
         function restoreGameState() {
             if (!gameOverState) return;
-            
+
             // Restaura estado salvo
             tilesOnBoard = gameOverState.boardTiles;
             tilesInTray = gameOverState.trayTiles;
-            
+
             // 🎁 BÔNUS POR ASSISTIR PROPAGANDA:
             // 1. Remove 1-2 peças da bandeja para dar espaço
             // 2. Dá 1-2 usos extras de Undo
             // 3. Embaralha o tabuleiro para criar novas oportunidades
-            
+
             // Remove 1-2 peças aleatórias da bandeja (respeitando regra de trio)
             if (tilesInTray.length > 0) {
                 const piecesToRemove = Math.min(2, tilesInTray.length);
-                
+
                 // Conta tipos na bandeja
                 const trayTypeCounts = {};
                 tilesInTray.forEach(t => {
                     trayTypeCounts[t.type] = (trayTypeCounts[t.type] || 0) + 1;
                 });
-                
+
                 // Remove peças mantendo a regra de divisibilidade por 3
                 let removed = 0;
                 for (let type in trayTypeCounts) {
                     if (removed >= piecesToRemove) break;
-                    
+
                     const count = trayTypeCounts[type];
                     const remainder = count % 3;
-                    
+
                     // Prioriza remover tipos que atrapalham (não-divisíveis por 3)
                     if (remainder !== 0) {
                         for (let i = 0; i < Math.min(remainder, piecesToRemove - removed); i++) {
@@ -3093,14 +3246,14 @@
                         }
                     }
                 }
-                
+
                 // Se não removeu o suficiente, remove qualquer peça
                 while (removed < piecesToRemove && tilesInTray.length > 0) {
                     const randomIndex = Math.floor(Math.random() * tilesInTray.length);
                     tilesInTray.splice(randomIndex, 1);
                     removed++;
                 }
-                
+
                 // Validação: garante regra de trio
                 const allTiles = [...tilesOnBoard, ...tilesInTray];
                 if (!validateTrioRule(allTiles)) {
@@ -3109,11 +3262,11 @@
                     return;
                 }
             }
-            
+
             // 🎁 Bônus 1: +2 usos de Undo (jogadas extras)
             skillUses.undo += 2;
             updateSkillCounter('undo');
-            
+
             // 🎁 Bônus 2: Embaralha o tabuleiro para criar novas oportunidades
             // Embaralha apenas as posições (mantém as peças, muda onde estão)
             const positions = tilesOnBoard.map(t => ({ x: t.x, y: t.y, z: t.z }));
@@ -3123,7 +3276,7 @@
                 tile.y = positions[i].y;
                 tile.z = positions[i].z;
             });
-            
+
             // Recria o tabuleiro com posições embaralhadas
             boardEl.innerHTML = '';
             tilesOnBoard.forEach(tile => {
@@ -3133,27 +3286,27 @@
                 el.style.left = tile.x + 'px';
                 el.style.top = tile.y + 'px';
                 el.style.zIndex = 10 + tile.z;
-                
+
                 // Aplica offset visual para camadas
                 const visualOffset = tile.z * -3;
                 el.style.transform = `translate(${visualOffset}px, ${visualOffset}px)`;
-                
+
                 // Cores e sombras progressivas por camada
                 const baseColor = 232 + (tile.z * 3); // 232 base, +3 por camada
                 el.style.backgroundColor = `rgb(${baseColor}, ${baseColor}, ${baseColor})`;
-                
+
                 const shadowSize = 2 + (tile.z * 2); // 2px base, +2px por camada
                 const shadowBlur = 3 + (tile.z * 3); // 3px base, +3px por camada
                 el.style.boxShadow = `${shadowSize}px ${shadowSize}px ${shadowBlur}px rgba(0,0,0,0.2)`;
-                
+
                 el.onclick = () => handleTileClick(tile);
                 boardEl.appendChild(el);
                 tile.el = el;
             });
-            
+
             checkBlockedTiles();
             updateTrayUI();
-            
+
             // Mostra feedback visual do bônus
             modalContent.innerHTML = `
                 <h1 style="color: #27ae60;">🎁 CONTINUE JOGANDO!</h1>
@@ -3165,19 +3318,110 @@
                 </div>
                 <button class="btn-primary" onclick="closeBonusModal()">CONTINUAR</button>
             `;
-            
+
             // Auto-fecha após 2 segundos
             setTimeout(() => {
                 overlay.style.display = 'none';
                 gameOverState = null;
             }, 2000);
         }
-        
+
         function closeBonusModal() {
             overlay.style.display = 'none';
             gameOverState = null;
         }
         
+        function restoreGameStateWithReturnedPiece() {
+            if (!gameOverState) return;
+
+            // Restaura estado salvo (já com a peça devolvida ao tabuleiro)
+            tilesOnBoard = gameOverState.boardTiles;
+            tilesInTray = gameOverState.trayTiles; // Agora tem 6 peças (removeu 1)
+
+            // Validação: garante regra de trio
+            const allTiles = [...tilesOnBoard, ...tilesInTray];
+            if (!validateTrioRule(allTiles)) {
+                console.warn('Aviso: Estado restaurado não respeita regra de trio. Reiniciando nível.');
+                startLevel(currentLevel);
+                return;
+            }
+
+            // 🎁 Bônus: +2 usos de Undo (jogadas extras)
+            skillUses.undo += 2;
+            updateSkillCounter('undo');
+
+            // 🔀 Embaralha o tabuleiro incluindo a peça devolvida
+            const positions = tilesOnBoard.map(t => ({ x: t.x, y: t.y, z: t.z }));
+            positions.sort(() => 0.5 - Math.random());
+            tilesOnBoard.forEach((tile, i) => {
+                tile.x = positions[i].x;
+                tile.y = positions[i].y;
+                tile.z = positions[i].z;
+            });
+
+            // Recria o tabuleiro embaralhado
+            boardEl.innerHTML = '';
+            tilesOnBoard.forEach(tile => {
+                const el = document.createElement('div');
+                el.classList.add('tile');
+                el.innerText = tile.type;
+                el.style.left = tile.x + 'px';
+                el.style.top = tile.y + 'px';
+                el.style.zIndex = 10 + tile.z;
+
+                // Aplica offset visual para camadas
+                const visualOffset = tile.z * -3;
+                el.style.transform = `translate(${visualOffset}px, ${visualOffset}px)`;
+
+                // Cores e sombras progressivas por camada
+                const baseColor = 232 + (tile.z * 3);
+                el.style.backgroundColor = `rgb(${baseColor}, ${baseColor}, ${baseColor})`;
+
+                const shadowSize = 2 + (tile.z * 2);
+                const shadowBlur = 3 + (tile.z * 3);
+                el.style.boxShadow = `${shadowSize}px ${shadowSize}px ${shadowBlur}px rgba(0,0,0,0.2)`;
+
+                el.onclick = () => handleTileClick(tile);
+                boardEl.appendChild(el);
+                tile.el = el;
+            });
+
+            checkBlockedTiles();
+            updateTrayUI();
+
+            // Mostra feedback do bônus
+            const continueText = currentLanguage === 'pt' ? 'CONTINUE JOGANDO!' :
+                                currentLanguage === 'en' ? 'KEEP PLAYING!' : '¡SIGUE JUGANDO!';
+            const bonusReceivedText = currentLanguage === 'pt' ? 'Você ganhou:' :
+                                     currentLanguage === 'en' ? 'You received:' : 'Recibiste:';
+            const pieceReturnedText = currentLanguage === 'pt' ? 'Peça devolvida ao tabuleiro embaralhado' :
+                                     currentLanguage === 'en' ? 'Piece returned to shuffled board' :
+                                     'Pieza devuelta al tablero barajado';
+            const trayNowText = currentLanguage === 'pt' ? 'Bandeja agora com 6 peças' :
+                               currentLanguage === 'en' ? 'Tray now with 6 pieces' :
+                               'Bandeja ahora con 6 piezas';
+            const undoText = currentLanguage === 'pt' ? '+2 jogadas de Desfazer' :
+                            currentLanguage === 'en' ? '+2 Undo moves' :
+                            '+2 movimientos de Deshacer';
+            
+            modalContent.innerHTML = `
+                <h1 style="color: #27ae60;">🎁 ${continueText}</h1>
+                <p style="font-size: 1.1rem; margin: 20px 0;">${bonusReceivedText}</p>
+                <div style="background: #ecf0f1; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                    <p style="margin: 8px 0;">🔀 ${pieceReturnedText}</p>
+                    <p style="margin: 8px 0;">📦 ${trayNowText}</p>
+                    <p style="margin: 8px 0;">↩️ ${undoText}</p>
+                </div>
+                <button class="btn-primary" onclick="closeBonusModal()">${currentLanguage === 'pt' ? 'CONTINUAR' : currentLanguage === 'en' ? 'CONTINUE' : 'CONTINUAR'}</button>
+            `;
+
+            // Auto-fecha após 2 segundos
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                gameOverState = null;
+            }, 2000);
+        }
+
         function autoRetryLevel() {
             // Tempo esgotado - reinicia o nível
             if (countdownTimer) {
@@ -3209,4 +3453,5 @@
 
     </script>
 </body>
+
 </html>
