@@ -3078,12 +3078,12 @@
             // Mostra modal com contador
             countdownSeconds = 5;
             const trayFullText = currentLanguage === 'pt' ? 'BANDEJA CHEIA!' : currentLanguage === 'en' ? 'TRAY FULL!' : '¡BANDEJA LLENA!';
-            const watchAdText = currentLanguage === 'pt' ? 'Assista anúncio e GANHE uma peça de brinde!' : 
-                               currentLanguage === 'en' ? 'Watch ad and GET a bonus piece!' : 
-                               '¡Mira anuncio y OBTÉN una pieza de regalo!';
-            const bonusText = currentLanguage === 'pt' ? 'Continue jogando com ajuda extra + embaralhamento' : 
-                             currentLanguage === 'en' ? 'Keep playing with extra help + shuffle' : 
-                             'Sigue jugando con ayuda extra + barajar';
+            const watchAdText = currentLanguage === 'pt' ? 'Assista anúncio e GANHE uma segunda chance!' : 
+                               currentLanguage === 'en' ? 'Watch ad and GET a second chance!' : 
+                               '¡Mira anuncio y OBTÉN una segunda oportunidad!';
+            const bonusText = currentLanguage === 'pt' ? 'Remove 5 peças da bandeja + embaralhamento' : 
+                             currentLanguage === 'en' ? 'Remove 5 pieces from tray + shuffle' : 
+                             'Elimina 5 piezas de la bandeja + barajar';
             const waitText = currentLanguage === 'pt' ? 'Ou aguarde' : currentLanguage === 'en' ? 'Or wait' : 'O espera';
             const restartText = currentLanguage === 'pt' ? 's para reiniciar' : currentLanguage === 'en' ? 's to restart' : 's para reiniciar';
 
@@ -3096,7 +3096,7 @@
                     <div class="countdown-number" id="countdown-num">5</div>
                 </div>
                 <button class="btn-continue" onclick="watchAdAndContinue()">
-                    ▶ ${currentLanguage === 'pt' ? 'GANHAR PEÇA' : currentLanguage === 'en' ? 'GET PIECE' : 'OBTENER PIEZA'} 🎁
+                    ▶ ${currentLanguage === 'pt' ? 'CONTINUAR' : currentLanguage === 'en' ? 'CONTINUE' : 'CONTINUAR'} 🎁
                 </button>
                 <p style="font-size: 0.9rem; color: #999; margin-top: 10px;">${waitText} ${countdownSeconds}${restartText}</p>
             `;
@@ -3285,47 +3285,18 @@
             tilesOnBoard = gameOverState.boardTiles;
             tilesInTray = gameOverState.trayTiles; // Tem 7 peças
 
-            // 🎁 BÔNUS: Escolhe uma peça da bandeja e adiciona outra igual no tabuleiro
-            // Isso dá uma "ajuda" para formar um trio facilmente!
+            // 🎁 BÔNUS: Remove 5 peças da bandeja, deixa apenas 2
+            const piecesToKeep = 2;
             
-            if (tilesInTray.length > 0) {
-                // Conta quantas vezes cada tipo aparece na bandeja
-                const trayTypeCounts = {};
-                tilesInTray.forEach(t => {
-                    trayTypeCounts[t.type] = (trayTypeCounts[t.type] || 0) + 1;
-                });
+            if (tilesInTray.length > piecesToKeep) {
+                // Embaralha para escolher aleatoriamente quais manter
+                tilesInTray.sort(() => 0.5 - Math.random());
                 
-                // Escolhe o tipo que mais aparece (prioridade) ou qualquer um
-                let chosenType = null;
-                let maxCount = 0;
-                for (let type in trayTypeCounts) {
-                    if (trayTypeCounts[type] > maxCount) {
-                        maxCount = trayTypeCounts[type];
-                        chosenType = type;
-                    }
-                }
+                // Remove as peças excedentes (mantém só 2)
+                const removedPieces = tilesInTray.splice(piecesToKeep);
                 
-                // Se não encontrou, pega o primeiro
-                if (!chosenType && tilesInTray.length > 0) {
-                    chosenType = tilesInTray[0].type;
-                }
-                
-                // Cria uma nova peça igual para adicionar ao tabuleiro
-                const bonusPiece = {
-                    id: Math.random().toString(36),
-                    type: chosenType,
-                    x: 0, // Será definida no embaralhamento
-                    y: 0,
-                    z: 0,
-                    blocked: false,
-                    el: null
-                };
-                
-                // Adiciona a peça de brinde ao tabuleiro
-                tilesOnBoard.push(bonusPiece);
-                
-                // Salva qual foi a peça de brinde para mostrar ao jogador
-                gameOverState.bonusPieceType = chosenType;
+                // Salva quantas foram removidas para mostrar
+                gameOverState.removedCount = removedPieces.length;
             }
 
             // Validação: garante regra de trio
@@ -3340,7 +3311,7 @@
             skillUses.undo += 2;
             updateSkillCounter('undo');
 
-            // 🔀 Embaralha o tabuleiro incluindo a peça de brinde
+            // 🔀 Embaralha o tabuleiro
             const positions = tilesOnBoard.map(t => ({ x: t.x, y: t.y, z: t.z }));
             positions.sort(() => 0.5 - Math.random());
             tilesOnBoard.forEach((tile, i) => {
@@ -3379,30 +3350,32 @@
             checkBlockedTiles();
             updateTrayUI();
 
-            // Mostra feedback do bônus com a peça de brinde
-            const continueText = currentLanguage === 'pt' ? 'PEÇA DE BRINDE!' :
-                                currentLanguage === 'en' ? 'BONUS PIECE!' : '¡PIEZA DE REGALO!';
-            const bonusExplainText = currentLanguage === 'pt' ? 'Você ganhou uma peça extra para formar um trio:' :
-                                     currentLanguage === 'en' ? 'You got an extra piece to form a trio:' :
-                                     'Obtuviste una pieza extra para formar un trío:';
-            const bonusReceivedText = currentLanguage === 'pt' ? 'Peça adicionada ao tabuleiro embaralhado' :
-                                     currentLanguage === 'en' ? 'Piece added to shuffled board' :
-                                     'Pieza agregada al tablero barajado';
-            const undoText = currentLanguage === 'pt' ? '+2 jogadas de Desfazer' :
-                            currentLanguage === 'en' ? '+2 Undo moves' :
-                            '+2 movimientos de Deshacer';
+            // Mostra feedback do bônus
+            const continueText = currentLanguage === 'pt' ? 'CONTINUE JOGANDO!' :
+                                currentLanguage === 'en' ? 'KEEP PLAYING!' : '¡SIGUE JUGANDO!';
+            const bonusReceivedText = currentLanguage === 'pt' ? 'Você ganhou:' :
+                                     currentLanguage === 'en' ? 'You received:' : 'Recibiste:';
+            const piecesRemovedText = currentLanguage === 'pt' ? `🗑️ ${gameOverState.removedCount || 5} peças removidas da bandeja` :
+                                     currentLanguage === 'en' ? `🗑️ ${gameOverState.removedCount || 5} pieces removed from tray` :
+                                     `🗑️ ${gameOverState.removedCount || 5} piezas eliminadas de la bandeja`;
+            const trayNowText = currentLanguage === 'pt' ? '📦 Bandeja agora com 2 peças' :
+                               currentLanguage === 'en' ? '📦 Tray now with 2 pieces' :
+                               '📦 Bandeja ahora con 2 piezas';
+            const shuffledText = currentLanguage === 'pt' ? '🔀 Tabuleiro embaralhado' :
+                                currentLanguage === 'en' ? '🔀 Board shuffled' :
+                                '🔀 Tablero barajado';
+            const undoText = currentLanguage === 'pt' ? '↩️ +2 jogadas de Desfazer' :
+                            currentLanguage === 'en' ? '↩️ +2 Undo moves' :
+                            '↩️ +2 movimientos de Deshacer';
             
             modalContent.innerHTML = `
                 <h1 style="color: #27ae60;">🎁 ${continueText}</h1>
-                <p style="font-size: 1.1rem; margin: 15px 0;">${bonusExplainText}</p>
-                <div style="font-size: 4rem; margin: 20px 0; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
-                            width: 100px; height: 100px; border-radius: 20px; display: flex; align-items: center; 
-                            justify-content: center; margin: 20px auto; box-shadow: 0 8px 20px rgba(245,87,108,0.4);">
-                    ${gameOverState.bonusPieceType || '🎁'}
-                </div>
+                <p style="font-size: 1.1rem; margin: 15px 0;">${bonusReceivedText}</p>
                 <div style="background: #ecf0f1; padding: 15px; border-radius: 10px; margin: 15px 0;">
-                    <p style="margin: 8px 0;">🔀 ${bonusReceivedText}</p>
-                    <p style="margin: 8px 0;">↩️ ${undoText}</p>
+                    <p style="margin: 8px 0; font-weight: bold; color: #e74c3c;">${piecesRemovedText}</p>
+                    <p style="margin: 8px 0; font-weight: bold; color: #27ae60;">${trayNowText}</p>
+                    <p style="margin: 8px 0;">${shuffledText}</p>
+                    <p style="margin: 8px 0;">${undoText}</p>
                 </div>
                 <button class="btn-primary" onclick="closeBonusModal()">${currentLanguage === 'pt' ? 'CONTINUAR JOGANDO' : currentLanguage === 'en' ? 'KEEP PLAYING' : 'SEGUIR JUGANDO'}</button>
             `;
